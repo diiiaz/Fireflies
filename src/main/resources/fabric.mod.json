@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "fireflies",
+	"version": "${version}",
+	"name": "Fireflies",
+	"description": "Adding fireflies !",
+	"authors": [
+		"Diiiaz"
+	],
+	"contact": {
+		"homepage": "https://github.com/diiiaz",
+		"sources": "https://github.com/diiiaz?tab=repositories"
+	},
+	"license": "MIT",
+	"icon": "assets/fireflies/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.diiiaz.fireflies.Fireflies"
+		],
+		"fabric-datagen": [
+			"io.github.diiiaz.fireflies.FirefliesDataGenerator"
+		],
+		"client": [
+			"io.github.diiiaz.fireflies.FirefliesClient"
+		]
+	},
+	"mixins": [
+		"fireflies.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
