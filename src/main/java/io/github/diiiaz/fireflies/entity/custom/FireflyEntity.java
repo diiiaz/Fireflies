@@ -1,19 +1,52 @@
 package io.github.diiiaz.fireflies.entity.custom;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.AmbientEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class FireflyEntity extends AmbientEntity {
+import java.util.EnumSet;
 
-    public FireflyEntity(EntityType<? extends AmbientEntity> entityType, World world) {
+public class FireflyEntity extends FlyingEntity {
+
+    private static final int MAX_X = 16;
+    private static final int MAX_Y = 12;
+    private static final int MAX_Z = 16;
+    private static final float MAX_SPEED = 0.02F;
+
+    private BlockPos turnAroundPos;
+
+
+    public FireflyEntity(EntityType<? extends FlyingEntity> entityType, World world) {
         super(entityType, world);
+        this.experiencePoints = 0;
+        this.turnAroundPos = BlockPos.ORIGIN;
+        this.moveControl = new FireflyEntity.FireflyMoveControl(this);
+    }
+
+
+    @Override
+    protected void initGoals() {
+        this.goalSelector.add(1, new SwimGoal(this));
+        this.goalSelector.add(5, new FireflyEntity.FlyRandomlyGoal(this));
+        this.goalSelector.add(7, new FireflyEntity.LookAtTargetGoal(this));
     }
 
 
@@ -24,16 +57,148 @@ public class FireflyEntity extends AmbientEntity {
 
 
     @Override
-    public void tick() {
-        super.tick();
-        this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putByte("TurnAroundPosX", (byte)this.turnAroundPos.getX());
+        nbt.putByte("TurnAroundPosY", (byte)this.turnAroundPos.getY());
+        nbt.putByte("TurnAroundPosZ", (byte)this.turnAroundPos.getZ());
     }
-
 
     @Override
-    public boolean isPushable() {
-        return false;
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (!nbt.contains("TurnAroundPosX", NbtElement.NUMBER_TYPE)) { return; }
+        this.turnAroundPos = new BlockPos(nbt.getInt("TurnAroundPosX"), nbt.getInt("TurnAroundPosY"), nbt.getInt("TurnAroundPosZ"));
     }
+
+
+    static class FlyRandomlyGoal extends Goal {
+        private final FireflyEntity firefly;
+
+        public FlyRandomlyGoal(FireflyEntity firefly) {
+            this.firefly = firefly;
+            this.setControls(EnumSet.of(Goal.Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            MoveControl moveControl = this.firefly.getMoveControl();
+            if (!moveControl.isMoving()) {
+                return true;
+            } else {
+                double xPos = moveControl.getTargetX() - this.firefly.getX();
+                double yPos = moveControl.getTargetY() - this.firefly.getY();
+                double zPos = moveControl.getTargetZ() - this.firefly.getZ();
+                double g = xPos * xPos + yPos * yPos + zPos * zPos;
+                return g < 1.0 || g > 3600.0;
+            }
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return false;
+        }
+
+        @Override
+        public void start() {
+            Random random = this.firefly.getRandom();
+
+            if (this.firefly.turnAroundPos == BlockPos.ORIGIN) {
+                this.firefly.turnAroundPos = this.firefly.getBlockPos();
+            }
+
+            double xPos = this.firefly.turnAroundPos.getX() + (double)((random.nextFloat() * 2.0F - 1.0F) * MAX_X);
+            double yPos = this.firefly.turnAroundPos.getY() + (double)(random.nextFloat() * MAX_Y);
+            double zPos = this.firefly.turnAroundPos.getZ() + (double)((random.nextFloat() * 2.0F - 1.0F) * MAX_Z);
+/*          These positions limit a firefly position to a box of (MAX_X x MAX_Z) horizontally centered around 'turnAroundPos', and MAX_Y in height starting from 'turnAroundPos'.
+            Here is an approximation :
+
+                        +-------------------+
+                       /|                  /|     P = turnAroundPos
+                      / |                 / |
+                     /  |                /  |
+                    +-------------------+   |
+                    |   + - - - - - - - | - +
+                    |  /                |  /
+                    | /        P        | /
+                    |/                  |/
+                    +-------------------+
+ */
+
+            this.firefly.getMoveControl().moveTo(xPos, yPos, zPos, 1.0);
+        }
+    }
+
+
+    static class FireflyMoveControl extends MoveControl {
+        private final FireflyEntity firefly;
+        private int collisionCheckCooldown;
+
+        public FireflyMoveControl(FireflyEntity firefly) {
+            super(firefly);
+            this.firefly = firefly;
+        }
+
+        @Override
+        public void tick() {
+            if (this.state == MoveControl.State.MOVE_TO) {
+                if (this.collisionCheckCooldown-- <= 0) {
+                    this.collisionCheckCooldown = this.collisionCheckCooldown + this.firefly.getRandom().nextInt(2) + 1;
+                    Vec3d vec3d = new Vec3d(this.targetX - this.firefly.getX(), this.targetY - this.firefly.getY(), this.targetZ - this.firefly.getZ());
+                    double d = vec3d.length();
+                    vec3d = vec3d.normalize();
+                    if (this.willCollide(vec3d, MathHelper.ceil(d))) {
+                        this.firefly.setVelocity(this.firefly.getVelocity().add(vec3d.multiply(MAX_SPEED)));
+                    } else {
+                        this.state = MoveControl.State.WAIT;
+                    }
+                }
+            }
+        }
+
+        private boolean willCollide(Vec3d direction, int steps) {
+            Box box = this.firefly.getBoundingBox();
+
+            for (int i = 1; i < steps; i++) {
+                box = box.offset(direction);
+                if (!this.firefly.getWorld().isSpaceEmpty(this.firefly, box)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+
+    static class LookAtTargetGoal extends Goal {
+        private final FireflyEntity firefly;
+
+        public LookAtTargetGoal(FireflyEntity firefly) {
+            this.firefly = firefly;
+            this.setControls(EnumSet.of(Goal.Control.LOOK));
+        }
+
+        @Override
+        public boolean canStart() {
+            return true;
+        }
+
+        @Override
+        public boolean shouldRunEveryTick() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
+            Vec3d vec3d = this.firefly.getVelocity();
+            this.firefly.setYaw(-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI));
+            this.firefly.bodyYaw = this.firefly.getYaw();
+        }
+    }
+
+    @Override
+    public boolean isPushable() { return false; }
 
     @Override
     protected void pushAway(Entity entity) {
@@ -44,13 +209,23 @@ public class FireflyEntity extends AmbientEntity {
     }
 
     @Override
-    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
-    }
-
-    @Override
     public boolean canAvoidTraps() {
         return true;
     }
+
+    @Override
+    protected @Nullable SoundEvent getDeathSound() {
+        return null;
+    }
+
+    @Override
+    protected @Nullable SoundEvent getHurtSound(DamageSource source) { return null; }
+
+    @Override
+    public SoundCategory getSoundCategory() {
+        return SoundCategory.AMBIENT;
+    }
+
 
 
     //    private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(FireflyEntity.class, TrackedDataHandlerRegistry.BYTE);
