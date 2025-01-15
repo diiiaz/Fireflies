@@ -11,13 +11,13 @@ import net.minecraft.util.Identifier;
 
 
 @Environment(EnvType.CLIENT)
-public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, FireflyEntityRenderState, FireflyModel> {
+public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, FireflyEntityRenderState, FireflyEntityModel> {
 
     private static final Identifier TEXTURE = Identifier.of(Mod.MOD_ID, "textures/entity/firefly/firefly.png");
     private static final float SHADOW_RADIUS = 0.1f;
 
     public FireflyEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new FireflyModel(context.getPart(ModEntityModelLayers.FIREFLY)), SHADOW_RADIUS);
+        super(context, new FireflyEntityModel(context.getPart(ModEntityModelLayers.FIREFLY)), SHADOW_RADIUS);
     }
 
     @Override
