@@ -1,5 +1,6 @@
 package io.github.diiiaz.fireflies.entity.client;
 
+import io.github.diiiaz.fireflies.Mod;
 import io.github.diiiaz.fireflies.entity.ModEntityModelLayers;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import net.fabricmc.api.EnvType;
@@ -12,7 +13,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, FireflyEntityRenderState, FireflyModel> {
 
-    private static final Identifier TEXTURE = Identifier.of("textures/entity/firefly/firefly.png");
+    private static final Identifier TEXTURE = Identifier.of(Mod.MOD_ID, "textures/entity/firefly/firefly.png");
     private static final float SHADOW_RADIUS = 0.1f;
 
     public FireflyEntityRenderer(EntityRendererFactory.Context context) {
