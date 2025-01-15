@@ -16,13 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"io.github.diiiaz.fireflies.Fireflies"
+			"io.github.diiiaz.fireflies.Mod"
 		],
 		"fabric-datagen": [
-			"io.github.diiiaz.fireflies.FirefliesDataGenerator"
+			"io.github.diiiaz.fireflies.ModDataGenerator"
 		],
 		"client": [
-			"io.github.diiiaz.fireflies.FirefliesClient"
+			"io.github.diiiaz.fireflies.ModClient"
 		]
 	},
 	"mixins": [
