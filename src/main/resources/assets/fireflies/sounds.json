@@ -1,0 +1,29 @@
+{
+  "bottle_used": {
+    "subtitle": "sounds.fireflies.bottle_used",
+    "sounds": [
+      "fireflies:bottle_used"
+    ]
+  },
+  "firefly_ambient": {
+    "subtitle": "sounds.fireflies.firefly_ambient",
+    "sounds": [
+      {
+        "name": "fireflies:mob/firefly/idle1",
+        "volume": 0.4
+      },
+      {
+        "name": "fireflies:mob/firefly/idle2",
+        "volume": 0.4
+      },
+      {
+        "name": "fireflies:mob/firefly/idle3",
+        "volume": 0.4
+      },
+      {
+        "name": "fireflies:mob/firefly/idle4",
+        "volume": 0.4
+      }
+    ]
+  }
+}

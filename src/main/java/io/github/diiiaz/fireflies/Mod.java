@@ -2,6 +2,7 @@ package io.github.diiiaz.fireflies;
 
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
+import io.github.diiiaz.fireflies.sound.ModSounds;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -16,6 +17,7 @@ public class Mod implements ModInitializer {
 	public void onInitialize() {
 
 		ModEntities.register();
+		ModSounds.register();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.FIREFLY, FireflyEntity.createAttributes());
 

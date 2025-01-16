@@ -1,3 +1,6 @@
 {
-  "entity.fireflies.firefly": "Firefly"
+  "entity.fireflies.firefly": "Firefly",
+
+  "sounds.fireflies.bottle_used": "Bottle used",
+  "sounds.fireflies.firefly_ambient": "Firefly buzz"
 }
