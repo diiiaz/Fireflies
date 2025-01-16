@@ -17,7 +17,7 @@ public class ModEntities {
 
     public static final EntityType<FireflyEntity> FIREFLY = Registry.register(Registries.ENTITY_TYPE, id,
             EntityType.Builder.create(FireflyEntity::new, SpawnGroup.AMBIENT)
-                    .dimensions(0.3f, 0.3f)
+                    .dimensions(0.2f, 0.2f)
                     .build(key));
 
     public static void register() {}
