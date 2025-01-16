@@ -32,12 +32,14 @@ public class FireflyEntity extends FlyingEntity {
     private static final float MAX_SPEED = 0.01F;
 
     private BlockPos turnAroundPos;
+    public double random;
 
 
     public FireflyEntity(EntityType<? extends FlyingEntity> entityType, World world) {
         super(entityType, world);
         this.experiencePoints = 0;
         this.turnAroundPos = BlockPos.ORIGIN;
+        this.random = world.getRandom().nextFloat();
         this.moveControl = new FireflyEntity.FireflyMoveControl(this);
     }
 
