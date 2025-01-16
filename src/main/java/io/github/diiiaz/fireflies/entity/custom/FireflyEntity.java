@@ -1,6 +1,8 @@
 package io.github.diiiaz.fireflies.entity.custom;
 
+import io.github.diiiaz.fireflies.sound.ModSounds;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.Goal;
@@ -10,12 +12,18 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -58,6 +66,32 @@ public class FireflyEntity extends FlyingEntity {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.MAX_HEALTH, 2.0)
                 .add(EntityAttributes.FOLLOW_RANGE, 100.0);
+    }
+
+
+    @Override
+    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+        if (itemStack.isOf(Items.GLASS_BOTTLE)) {
+            if (!player.getEntityWorld().isClient()) {
+                ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
+                serverWorld.spawnParticles(
+                        ParticleTypes.WHITE_SMOKE,
+                        this.getX(),
+                        this.getY(),
+                        this.getZ(),
+                        3,
+                        0, 0, 0,
+                        0.005);
+            }
+            player.playSound(ModSounds.BOTTLE_USED, 0.8F, (float) MathHelper.map(player.getRandom().nextFloat(), 0.0, 1.0, 0.95, 1.05));
+            ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, Items.MILK_BUCKET.getDefaultStack());
+            player.setStackInHand(hand, itemStack2);
+            this.discard();
+            return ActionResult.SUCCESS;
+        }
+        return super.interactMob(player, hand);
+
     }
 
 
@@ -234,6 +268,17 @@ public class FireflyEntity extends FlyingEntity {
     @Override
     protected @Nullable SoundEvent getHurtSound(DamageSource source) {
         return null;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+
+    }
+
+
+    @Override
+    protected @Nullable SoundEvent getAmbientSound() {
+        return ModSounds.FIREFLY_AMBIENT;
     }
 
     @Override
