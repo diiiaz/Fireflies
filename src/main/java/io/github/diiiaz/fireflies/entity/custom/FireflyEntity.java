@@ -1,7 +1,7 @@
 package io.github.diiiaz.fireflies.entity.custom;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -26,10 +26,10 @@ import java.util.EnumSet;
 
 public class FireflyEntity extends FlyingEntity {
 
-    private static final int MAX_X = 16;
-    private static final int MAX_Y = 12;
-    private static final int MAX_Z = 16;
-    private static final float MAX_SPEED = 0.02F;
+    private static final int MAX_X = 12;
+    private static final int MAX_Y = 6;
+    private static final int MAX_Z = 12;
+    private static final float MAX_SPEED = 0.01F;
 
     private BlockPos turnAroundPos;
 
@@ -59,16 +59,21 @@ public class FireflyEntity extends FlyingEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putByte("TurnAroundPosX", (byte)this.turnAroundPos.getX());
-        nbt.putByte("TurnAroundPosY", (byte)this.turnAroundPos.getY());
-        nbt.putByte("TurnAroundPosZ", (byte)this.turnAroundPos.getZ());
+        LongArrayList arr = new LongArrayList(3);
+        arr.add(this.turnAroundPos.getX());
+        arr.add(this.turnAroundPos.getY());
+        arr.add(this.turnAroundPos.getZ());
+        nbt.putLongArray("TurnAroundPos", arr);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (!nbt.contains("TurnAroundPosX", NbtElement.NUMBER_TYPE)) { return; }
-        this.turnAroundPos = new BlockPos(nbt.getInt("TurnAroundPosX"), nbt.getInt("TurnAroundPosY"), nbt.getInt("TurnAroundPosZ"));
+        if (!nbt.contains("TurnAroundPos", NbtElement.LONG_ARRAY_TYPE)) {
+            return;
+        }
+        LongArrayList arr = LongArrayList.wrap(nbt.getLongArray("TurnAroundPos"));
+        this.turnAroundPos = new BlockPos(Math.toIntExact(arr.get(0)), Math.toIntExact(arr.get(1)), Math.toIntExact(arr.get(2)));
     }
 
 
