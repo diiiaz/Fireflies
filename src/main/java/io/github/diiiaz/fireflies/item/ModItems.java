@@ -23,14 +23,12 @@ public class ModItems {
             .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Mod.MOD_ID, FIREFLY_BOTTLE_NAME)))
     ));
 
-
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(Mod.MOD_ID, name), item);
     }
 
 
-    public static void register() {
-
+    public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(entries -> {
             entries.addAfter(Items.CREAKING_HEART, FIREFLY_BOTTLE);
         });

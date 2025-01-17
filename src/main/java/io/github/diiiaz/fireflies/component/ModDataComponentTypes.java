@@ -21,6 +21,6 @@ public class ModDataComponentTypes {
                 builderOperator.apply(ComponentType.builder()).build());
     }
 
-    public static void register() {}
+    public static void initialize() {}
 
 }

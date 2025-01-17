@@ -20,7 +20,7 @@ public class ModEntities {
                     .dimensions(0.2f, 0.2f)
                     .build(key));
 
-    public static void register() {}
+    public static void initialize() {}
 
 
 }

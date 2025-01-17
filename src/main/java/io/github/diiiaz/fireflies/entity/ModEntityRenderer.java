@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 public class ModEntityRenderer {
 
 
-    public static void register() {
+    public static void initialize() {
         EntityRendererRegistry.register(ModEntities.FIREFLY, FireflyEntityRenderer::new);
     }
 }

@@ -9,8 +9,8 @@ public class ModClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ModEntityRenderer.register();
-        ModEntityModelLayers.register();
+        ModEntityRenderer.initialize();
+        ModEntityModelLayers.initialize();
     }
 
 }

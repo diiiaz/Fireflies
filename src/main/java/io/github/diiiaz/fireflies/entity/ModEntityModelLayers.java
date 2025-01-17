@@ -20,6 +20,6 @@ public class ModEntityModelLayers {
         return model;
     }
 
-    public static void register() {}
+    public static void initialize() {}
 
 }

@@ -18,10 +18,10 @@ public class Mod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		ModDataComponentTypes.register();
-		ModEntities.register();
-		ModItems.register();
-		ModSounds.register();
+		ModDataComponentTypes.initialize();
+		ModEntities.initialize();
+		ModItems.initialize();
+		ModSounds.initialize();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.FIREFLY, FireflyEntity.createAttributes());
 
