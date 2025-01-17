@@ -75,16 +75,15 @@ public class FireflyEntity extends FlyingEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (!itemStack.isOf(Items.GLASS_BOTTLE)) { return super.interactMob(player, hand); }
-        if (!player.getEntityWorld().isClient()) {
-            ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
-            FireflyBottle.spawnBottleParticles(serverWorld, this.getX(), this.getY(), this.getZ());
-            ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, ModItems.FIREFLY_BOTTLE.getDefaultStack());
-            player.setStackInHand(hand, itemStack2);
-            this.discard();
-        } else {
-            FireflyBottle.playBottleSound(player, itemStack);
-        }
-        return ActionResult.SUCCESS;
+        if (player.getEntityWorld().isClient()) { return super.interactMob(player, hand); }
+
+        ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
+        FireflyBottle.spawnBottleParticles(serverWorld, this.getX(), this.getY(), this.getZ());
+        FireflyBottle.playBottleSound(serverWorld, player, itemStack);
+        ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, ModItems.FIREFLY_BOTTLE.getDefaultStack());
+        player.setStackInHand(hand, itemStack2);
+        this.discard();
+        return ActionResult.SUCCESS_SERVER;
     }
 
 

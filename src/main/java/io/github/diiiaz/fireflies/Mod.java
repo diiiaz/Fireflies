@@ -1,5 +1,7 @@
 package io.github.diiiaz.fireflies;
 
+import io.github.diiiaz.fireflies.block.ModBlocks;
+import io.github.diiiaz.fireflies.block.ModProperties;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
@@ -18,9 +20,11 @@ public class Mod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		ModProperties.initialize();
 		ModDataComponentTypes.initialize();
 		ModEntities.initialize();
 		ModItems.initialize();
+		ModBlocks.initialize();
 		ModSounds.initialize();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.FIREFLY, FireflyEntity.createAttributes());

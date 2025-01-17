@@ -1,6 +1,9 @@
 {
   "entity.fireflies.firefly": "Firefly",
 
+  "block.fireflies.firefly_lantern_block": "Firefly Lantern",
+  "block.fireflies.firefly_lantern": "Firefly Lantern",
+
   "item.fireflies.firefly_bottle": "Firefly Bottle",
 
   "sounds.fireflies.firefly_bottle_used": "Bottle used",

@@ -3,7 +3,7 @@
 	"package": "io.github.diiiaz.fireflies.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"GlassBottleItemMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
