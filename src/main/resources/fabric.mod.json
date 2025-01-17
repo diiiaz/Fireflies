@@ -5,11 +5,11 @@
 	"name": "Fireflies",
 	"description": "Adding fireflies !",
 	"authors": [
-		"Diiiaz"
+		"diiiaz"
 	],
 	"contact": {
 		"homepage": "https://github.com/diiiaz",
-		"sources": "https://github.com/diiiaz?tab=repositories"
+		"sources": "https://github.com/diiiaz/Fireflies"
 	},
 	"license": "MIT",
 	"icon": "assets/fireflies/icon.png",
