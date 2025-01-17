@@ -1,8 +1,8 @@
 {
   "bottle_used": {
-    "subtitle": "sounds.fireflies.bottle_used",
+    "subtitle": "sounds.fireflies.firefly_bottle_used",
     "sounds": [
-      "fireflies:bottle_used"
+      "fireflies:firefly_bottle_used"
     ]
   },
   "firefly_ambient": {

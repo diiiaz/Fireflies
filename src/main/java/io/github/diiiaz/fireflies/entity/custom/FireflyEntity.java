@@ -1,5 +1,7 @@
 package io.github.diiiaz.fireflies.entity.custom;
 
+import io.github.diiiaz.fireflies.item.ModItems;
+import io.github.diiiaz.fireflies.item.custom.FireflyBottle;
 import io.github.diiiaz.fireflies.sound.ModSounds;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.block.BlockState;
@@ -72,26 +74,17 @@ public class FireflyEntity extends FlyingEntity {
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.isOf(Items.GLASS_BOTTLE)) {
-            if (!player.getEntityWorld().isClient()) {
-                ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
-                serverWorld.spawnParticles(
-                        ParticleTypes.WHITE_SMOKE,
-                        this.getX(),
-                        this.getY(),
-                        this.getZ(),
-                        3,
-                        0, 0, 0,
-                        0.005);
-            }
-            player.playSound(ModSounds.BOTTLE_USED, 0.8F, (float) MathHelper.map(player.getRandom().nextFloat(), 0.0, 1.0, 0.95, 1.05));
-            ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, Items.MILK_BUCKET.getDefaultStack());
+        if (!itemStack.isOf(Items.GLASS_BOTTLE)) { return super.interactMob(player, hand); }
+        if (!player.getEntityWorld().isClient()) {
+            ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
+            FireflyBottle.spawnBottleParticles(serverWorld, this.getX(), this.getY(), this.getZ());
+            ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, ModItems.FIREFLY_BOTTLE.getDefaultStack());
             player.setStackInHand(hand, itemStack2);
             this.discard();
-            return ActionResult.SUCCESS;
+        } else {
+            FireflyBottle.playBottleSound(player, itemStack);
         }
-        return super.interactMob(player, hand);
-
+        return ActionResult.SUCCESS;
     }
 
 
