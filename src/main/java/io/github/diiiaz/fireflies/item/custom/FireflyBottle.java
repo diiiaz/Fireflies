@@ -4,7 +4,6 @@ import io.github.diiiaz.fireflies.block.custom.FireflyLantern;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.sound.ModSounds;
-import io.github.diiiaz.fireflies.utils.ModChat;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

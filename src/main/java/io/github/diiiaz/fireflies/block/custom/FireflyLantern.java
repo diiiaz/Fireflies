@@ -4,7 +4,6 @@ import io.github.diiiaz.fireflies.block.ModProperties;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.item.ModItems;
 import io.github.diiiaz.fireflies.item.custom.FireflyBottle;
-import io.github.diiiaz.fireflies.utils.ModChat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LanternBlock;

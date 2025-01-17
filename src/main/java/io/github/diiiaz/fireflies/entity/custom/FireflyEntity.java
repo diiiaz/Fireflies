@@ -104,7 +104,7 @@ public class FireflyEntity extends FlyingEntity {
             return;
         }
         LongArrayList arr = LongArrayList.wrap(nbt.getLongArray("TurnAroundPos"));
-        this.turnAroundPos = new BlockPos(Math.toIntExact(arr.get(0)), Math.toIntExact(arr.get(1)), Math.toIntExact(arr.get(2)));
+        this.turnAroundPos = new BlockPos(Math.toIntExact(arr.getLong(0)), Math.toIntExact(arr.getLong(1)), Math.toIntExact(arr.getLong(2)));
     }
 
 
@@ -228,6 +228,7 @@ public class FireflyEntity extends FlyingEntity {
         @Override
         public void tick() {
             Vec3d vec3d = this.firefly.getVelocity();
+            //noinspection SuspiciousNameCombination
             this.firefly.setYaw(-((float) MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float) Math.PI));
             this.firefly.bodyYaw = this.firefly.getYaw();
         }
