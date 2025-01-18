@@ -6,6 +6,7 @@ import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.item.ModItems;
+import io.github.diiiaz.fireflies.particle.ModParticles;
 import io.github.diiiaz.fireflies.sound.ModSounds;
 import net.fabricmc.api.ModInitializer;
 
@@ -21,6 +22,7 @@ public class Mod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		ModParticles.initialize();
 		ModProperties.initialize();
 		ModDataComponentTypes.initialize();
 		ModEntities.initialize();

@@ -8,6 +8,4 @@ import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 @Environment(EnvType.CLIENT)
 public class FireflyEntityRenderState extends LivingEntityRenderState {
 
-
-
 }

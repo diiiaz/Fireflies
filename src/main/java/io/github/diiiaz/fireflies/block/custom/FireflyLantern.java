@@ -4,6 +4,7 @@ import io.github.diiiaz.fireflies.block.ModProperties;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.item.ModItems;
 import io.github.diiiaz.fireflies.item.custom.FireflyBottle;
+import io.github.diiiaz.fireflies.particle.ModParticles;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LanternBlock;
@@ -13,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -21,6 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
@@ -62,14 +65,21 @@ public class FireflyLantern extends LanternBlock {
 
 
     @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (getFirefliesAmount(state) < 1) { return; }
+        double x = (double)pos.getX() + (double)0.5F + (random.nextDouble() - (double)0.5F) * 0.2;
+        double y = (double)pos.getY() + 0.2 + (random.nextDouble() - (double)0.5F) * 0.2;
+        double z = (double)pos.getZ() + (double)0.5F + (random.nextDouble() - (double)0.5F) * 0.2;
+        world.addParticle(ModParticles.FIREFLY, x, y, z, 0.0F, 0.0F, 0.0F);
+    }
+
+    @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-//        ModChat.print(String.valueOf(player.getWorld().isClient));
         return super.onUse(state, world, pos, player, hit);
     }
 
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-//        if (hand == Hand.OFF_HAND) { return super.onUseWithItem(stack, state, world, pos, player, hand, hit); }
         if (player.getWorld().isClient()) { return ActionResult.PASS; }
         if (stack.isOf(ModItems.FIREFLY_BOTTLE)) { return onUseWithFireflyBottle(stack, state, world, pos, player, hand); }
         if (stack.isOf(Items.GLASS_BOTTLE)) { return onUseWithGlassBottle(stack, state, world, pos, player, hand); }
