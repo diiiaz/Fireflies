@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, FireflyEntityRenderState, FireflyEntityModel> {
 
-    private static final Identifier TEXTURE = Identifier.of(Mod.MOD_ID, "textures/entity/firefly/firefly.png");
+    private static final Identifier TEXTURE = Mod.createIdentifier("textures/entity/firefly/firefly.png");
     private static final float SHADOW_RADIUS = 0.1f;
 
     public FireflyEntityRenderer(EntityRendererFactory.Context context) {

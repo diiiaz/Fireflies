@@ -17,7 +17,7 @@ public class ModDataComponentTypes {
 
 
     private static <T>ComponentType<T> register(String name, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
-        return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(Mod.MOD_ID, name),
+        return Registry.register(Registries.DATA_COMPONENT_TYPE, Mod.createIdentifier(name),
                 builderOperator.apply(ComponentType.builder()).build());
     }
 

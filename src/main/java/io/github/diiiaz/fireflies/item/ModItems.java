@@ -20,11 +20,11 @@ public class ModItems {
     public static final Item FIREFLY_BOTTLE = registerItem(FIREFLY_BOTTLE_NAME,new FireflyBottle(new Item.Settings()
             .maxCount(1)
             .component(ModDataComponentTypes.FIREFLIES_AMOUNT, 1)
-            .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Mod.MOD_ID, FIREFLY_BOTTLE_NAME)))
+            .registryKey(RegistryKey.of(RegistryKeys.ITEM, Mod.createIdentifier(FIREFLY_BOTTLE_NAME)))
     ));
 
     private static Item registerItem(String name, Item item) {
-        return Registry.register(Registries.ITEM, Identifier.of(Mod.MOD_ID, name), item);
+        return Registry.register(Registries.ITEM, Mod.createIdentifier(name), item);
     }
 
 

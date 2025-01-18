@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 public class ModEntityModelLayers {
 
 
-    public static final Identifier id = Identifier.of(Mod.MOD_ID, "firefly");
+    public static final Identifier id = Mod.createIdentifier("firefly");
     public static final EntityModelLayer FIREFLY = create(id, FireflyEntityModel::getTexturedModelData);
 
 

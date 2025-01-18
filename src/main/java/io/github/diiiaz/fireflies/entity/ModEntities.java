@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 public class ModEntities {
 
-    public static final Identifier id = Identifier.of(Mod.MOD_ID, "firefly");
+    public static final Identifier id = Mod.createIdentifier("firefly");
     private static final RegistryKey<EntityType<?>> key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, id);
 
     public static final EntityType<FireflyEntity> FIREFLY = Registry.register(Registries.ENTITY_TYPE, id,

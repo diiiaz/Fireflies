@@ -21,7 +21,7 @@ public class ModBlocks {
 
     public static final Block FIREFLY_LANTERN = registerBlock("firefly_lantern",
             new FireflyLantern(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(Mod.MOD_ID, "firefly_lantern")))
+                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("firefly_lantern")))
                     .mapColor(MapColor.IRON_GRAY)
                     .solid()
                     .strength(3.5F)
@@ -34,14 +34,14 @@ public class ModBlocks {
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
-        return Registry.register(Registries.BLOCK, Identifier.of(Mod.MOD_ID, name), block);
+        return Registry.register(Registries.BLOCK,Mod.createIdentifier(name), block);
     }
 
 
     private static void registerBlockItem(String name, Block block) {
-        Registry.register(Registries.ITEM, Identifier.of(Mod.MOD_ID, name),
+        Registry.register(Registries.ITEM,Mod.createIdentifier(name),
                 new BlockItem(block, new Item.Settings().useBlockPrefixedTranslationKey()
-                        .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Mod.MOD_ID, name)))));
+                        .registryKey(RegistryKey.of(RegistryKeys.ITEM,Mod.createIdentifier(name)))));
     }
 
     public static void initialize() {

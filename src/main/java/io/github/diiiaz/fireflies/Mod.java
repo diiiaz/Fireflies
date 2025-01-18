@@ -10,6 +10,7 @@ import io.github.diiiaz.fireflies.sound.ModSounds;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,5 +30,9 @@ public class Mod implements ModInitializer {
 
 		FabricDefaultAttributeRegistry.register(ModEntities.FIREFLY, FireflyEntity.createAttributes());
 
+	}
+
+	public static Identifier createIdentifier(String name) {
+		return Identifier.of(MOD_ID, name);
 	}
 }
