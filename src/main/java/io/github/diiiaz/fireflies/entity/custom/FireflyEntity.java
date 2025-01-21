@@ -69,7 +69,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     private static final int MAX_WANDER_DISTANCE = 8;
     public static final String ALCOVE_POS_KEY = "alcove_pos";
 
-    private static final float MAX_SPEED = 0.01F;
+    private static final float MAX_SPEED = 0.5F;
 
     private BlockPos alcovePos;
 
@@ -308,7 +308,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         Vec3d vec3d2 = NoWaterTargeting.find(this, k, l, i, vec3d, (float) (Math.PI / 10));
         if (vec3d2 != null) {
             this.navigation.setRangeMultiplier(0.5F);
-            this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, MAX_SPEED);
+            this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.0);
         }
     }
 
@@ -425,21 +425,6 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
     // region +--------------------------+ Goals +--------------------------+
 
-//    @Debug
-//    public GoalSelector getGoalSelector() {
-//        return this.goalSelector;
-//    }
-//
-//    @Debug
-//    public int getMoveGoalTicks() {
-//        return this.moveToAlcoveGoal.ticks;
-//    }
-//
-//    @Debug
-//    public List<BlockPos> getPossibleAlcoves() {
-//        return this.moveToAlcoveGoal.possibleAlcoves;
-//    }
-
 
     abstract static class NormalGoal extends Goal {
         public abstract boolean canFireflyStart();
@@ -473,7 +458,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
         @Override
         public boolean canStart() {
-            return FireflyEntity.this.navigation.isIdle() && FireflyEntity.this.random.nextInt(10) == 0;
+            return FireflyEntity.this.navigation.isIdle() && FireflyEntity.this.random.nextInt(2) == 0;
         }
 
         @Override
@@ -485,7 +470,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         public void start() {
             Vec3d vec3d = this.getRandomLocation();
             if (vec3d != null) {
-                FireflyEntity.this.navigation.startMovingAlong(FireflyEntity.this.navigation.findPathTo(BlockPos.ofFloored(vec3d), 1), 1.0);
+                FireflyEntity.this.navigation.startMovingAlong(FireflyEntity.this.navigation.findPathTo(BlockPos.ofFloored(vec3d), 1), MAX_SPEED);
             }
         }
 
