@@ -18,16 +18,18 @@ public class ModItems {
 
     public static final Item FIREFLY_BOTTLE = registerItem(FIREFLY_BOTTLE_NAME,new FireflyBottle(new Item.Settings()
             .maxCount(1)
-            .component(ModDataComponentTypes.FIREFLIES_AMOUNT, 1)
+            .component(ModDataComponentTypes.BOTTLE_FIREFLIES_AMOUNT, 1)
             .registryKey(RegistryKey.of(RegistryKeys.ITEM, Mod.createIdentifier(FIREFLY_BOTTLE_NAME)))
     ));
 
+    @SuppressWarnings("SameParameterValue")
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Mod.createIdentifier(name), item);
     }
 
 
     public static void initialize() {
+        //noinspection CodeBlock2Expr
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(entries -> {
             entries.addAfter(Items.CREAKING_HEART, FIREFLY_BOTTLE);
         });

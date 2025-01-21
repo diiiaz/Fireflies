@@ -39,13 +39,14 @@ public class FireflyBottle extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("tooltip.fireflies.firefly_bottle", getFirefliesAmount(stack), MAX_AMOUNT_OF_FIREFLIES).formatted(Formatting.GRAY));
         super.appendTooltip(stack, context, tooltip, type);
+        int j = stack.getOrDefault(ModDataComponentTypes.BOTTLE_FIREFLIES_AMOUNT, 1);
+        tooltip.add(Text.translatable("tooltip.fireflies.firefly_bottle", j, MAX_AMOUNT_OF_FIREFLIES).formatted(Formatting.GRAY));
     }
 
 
     public static int getFirefliesAmount(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, 1);
+        return stack.getOrDefault(ModDataComponentTypes.BOTTLE_FIREFLIES_AMOUNT, 1);
     }
 
     public static boolean canAddFireflies(ItemStack stack, int amount) {
@@ -142,7 +143,7 @@ public class FireflyBottle extends Item {
         if (!canAddFireflies(itemStack, amount) && amount > 0) { return false; }
         if (!canRemoveFireflies(itemStack, amount) && amount < 0) { return false; }
 
-        itemStack.set(ModDataComponentTypes.FIREFLIES_AMOUNT, newAmount);
+        itemStack.set(ModDataComponentTypes.BOTTLE_FIREFLIES_AMOUNT, newAmount);
 
         if (getFirefliesAmount(itemStack) < MIN_AMOUNT_OF_FIREFLIES) {
             // exchange firefly bottle to a glass bottle

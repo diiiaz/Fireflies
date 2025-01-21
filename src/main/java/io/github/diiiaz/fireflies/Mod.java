@@ -2,12 +2,15 @@ package io.github.diiiaz.fireflies;
 
 import io.github.diiiaz.fireflies.block.ModBlocks;
 import io.github.diiiaz.fireflies.block.ModProperties;
+import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.item.ModItems;
 import io.github.diiiaz.fireflies.particle.ModParticles;
+import io.github.diiiaz.fireflies.point_of_interest.ModPointOfInterestTypes;
 import io.github.diiiaz.fireflies.sound.ModSounds;
+import io.github.diiiaz.fireflies.utils.ModTags;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -22,11 +25,16 @@ public class Mod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		ModTags.initialize();
+		ModPointOfInterestTypes.initialize();
 		ModParticles.initialize();
 		ModProperties.initialize();
 		ModDataComponentTypes.initialize();
+
 		ModEntities.initialize();
+
 		ModItems.initialize();
+		ModBlockEntityTypes.initialize();
 		ModBlocks.initialize();
 		ModSounds.initialize();
 

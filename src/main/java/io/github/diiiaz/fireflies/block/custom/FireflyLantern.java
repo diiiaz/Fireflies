@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 
 public class FireflyLantern extends LanternBlock {
 
-    public static final IntProperty FIREFLIES_AMOUNT = ModProperties.FIREFLIES_AMOUNT;
+    public static final IntProperty FIREFLIES_AMOUNT = ModProperties.FIREFLIES_LANTERN_AMOUNT;
 
     public FireflyLantern(Settings settings) {
         super(settings);
@@ -51,11 +51,11 @@ public class FireflyLantern extends LanternBlock {
     }
 
     public static boolean canAddFireflies(BlockState state, int amount) {
-        return (getFirefliesAmount(state) + MathHelper.abs(amount)) <= ModProperties.FIREFLIES_AMOUNT_MAX;
+        return (getFirefliesAmount(state) + MathHelper.abs(amount)) <= ModProperties.FIREFLIES_LANTERN_AMOUNT_MAX;
     }
 
     public static boolean canRemoveFireflies(BlockState state, int amount) {
-        return (getFirefliesAmount(state) - MathHelper.abs(amount)) >= (ModProperties.FIREFLIES_AMOUNT_MIN);
+        return (getFirefliesAmount(state) - MathHelper.abs(amount)) >= (ModProperties.FIREFLIES_LANTERN_AMOUNT_MIN);
     }
 
     public static int getLuminance(BlockState state) {
@@ -131,8 +131,8 @@ public class FireflyLantern extends LanternBlock {
 
     @Override
     public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        super.afterBreak(world, player, pos, state, blockEntity, tool);
         if (player.isCreative()) {
-            super.afterBreak(world, player, pos, state, blockEntity, tool);
             return;
         }
         spawnFireflies((ServerWorld) world, getFirefliesAmount(state), pos);

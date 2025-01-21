@@ -1,13 +1,15 @@
 {
   "entity.fireflies.firefly": "Firefly",
 
-  "block.fireflies.firefly_lantern_block": "Firefly Lantern",
   "block.fireflies.firefly_lantern": "Firefly Lantern",
+  "block.fireflies.firefly_alcove": "Firefly Alcove",
+
+  "container.firefly_alcove.fireflies": "Fireflies: %s / %s",
 
   "item.fireflies.firefly_bottle": "Firefly Bottle",
 
   "sounds.fireflies.firefly_bottle_used": "Bottle used",
   "sounds.fireflies.firefly_ambient": "Firefly buzz",
 
-  "tooltip.fireflies.firefly_bottle": "Fireflies: %1$s / %2$s"
+  "tooltip.fireflies.firefly_bottle": "Fireflies: %s / %s"
 }

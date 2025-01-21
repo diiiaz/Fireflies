@@ -18,11 +18,11 @@
 		"main": [
 			"io.github.diiiaz.fireflies.Mod"
 		],
-		"fabric-datagen": [
-			"io.github.diiiaz.fireflies.ModDataGenerator"
-		],
 		"client": [
 			"io.github.diiiaz.fireflies.ModClient"
+		],
+		"fabric-datagen": [
+			"io.github.diiiaz.fireflies.ModDataGenerator"
 		]
 	},
 	"mixins": [

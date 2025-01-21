@@ -1,0 +1,50 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "predicates": {
+                      "minecraft:enchantments": [
+                        {
+                          "enchantments": "minecraft:silk_touch",
+                          "levels": {
+                            "min": 1
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:copy_components",
+                  "include": [
+                    "fireflies:alcove_fireflies_amount"
+                  ],
+                  "source": "block_entity"
+                }
+              ],
+              "name": "fireflies:firefly_alcove"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "fireflies:firefly_alcove"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

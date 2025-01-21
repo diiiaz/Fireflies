@@ -39,11 +39,12 @@ public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, Fire
 
     @Override
     protected int getBlockLight(FireflyEntity entity, BlockPos pos) {
-        double offset = entity.random * 1000;
-        double frequency = MathHelper.clampedMap(entity.random, 0, 1, 0.05, 0.2);
+        double offset = entity.lightRandomValue * 1000;
+        double frequency = MathHelper.clampedMap(entity.lightRandomValue, 0, 1, 0.05, 0.2);
         return (int) sineWaveValue(0, 15, offset, frequency, entity.getWorld().getTime());
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static double sineWaveValue(double min, double max, double offset, double frequency, double time) {
         double amplitude = (max - min) / 2;
         double midpoint = (max + min) / 2;

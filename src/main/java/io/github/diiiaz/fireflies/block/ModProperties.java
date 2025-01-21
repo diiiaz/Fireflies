@@ -7,9 +7,15 @@ public class ModProperties {
     /**
      * A property that specifies the amount of fireflies in a firefly lantern block.
      */
-    public static final IntProperty FIREFLIES_AMOUNT = IntProperty.of("fireflies_amount", 0, 5);
-    public static final int FIREFLIES_AMOUNT_MIN = 0;
-    public static final int FIREFLIES_AMOUNT_MAX = 5;
+    public static final int FIREFLIES_LANTERN_AMOUNT_MIN = 0;
+    public static final int FIREFLIES_LANTERN_AMOUNT_MAX = 5;
+    public static final IntProperty FIREFLIES_LANTERN_AMOUNT = IntProperty.of("fireflies_amount", FIREFLIES_LANTERN_AMOUNT_MIN, FIREFLIES_LANTERN_AMOUNT_MAX);
+    /**
+     * A property that specifies the amount of fireflies of a firefly alcove.
+     */
+    public static final int FIREFLY_ALCOVE_AMOUNT_MIN = 0;
+    public static final int FIREFLY_ALCOVE_AMOUNT_MAX = 16;
+    public static final IntProperty FIREFLY_ALCOVE_AMOUNT = IntProperty.of("fireflies_amount", FIREFLY_ALCOVE_AMOUNT_MIN, FIREFLY_ALCOVE_AMOUNT_MAX);
 
 
     public static void initialize() {}
