@@ -10,6 +10,8 @@ import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import org.joml.Vector3f;
 
 public class FireflyParticleEffect extends AbstractDustParticleEffect {
@@ -38,4 +40,13 @@ public class FireflyParticleEffect extends AbstractDustParticleEffect {
     public Vector3f getColor() {
         return ColorHelper.toVector(this.color);
     }
+
+
+    public static FireflyParticleEffect createDefault(Random random) {
+        return new FireflyParticleEffect(ColorHelper.fromFloats(1.0F,
+                MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.0F), // red
+                MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.0F), // green
+                0.0F), 1.0F);
+    }
+
 }

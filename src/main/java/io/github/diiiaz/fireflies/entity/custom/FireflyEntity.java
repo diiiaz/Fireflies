@@ -3,7 +3,7 @@ package io.github.diiiaz.fireflies.entity.custom;
 import com.google.common.collect.Lists;
 import io.github.diiiaz.fireflies.block.ModBlocks;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
-import io.github.diiiaz.fireflies.block.entity.custom.FireflyAlcoveBlockEntity;
+import io.github.diiiaz.fireflies.block.entity.custom.LuminescentSoilBlockEntity;
 import io.github.diiiaz.fireflies.item.ModItems;
 import io.github.diiiaz.fireflies.item.custom.FireflyBottle;
 import io.github.diiiaz.fireflies.point_of_interest.ModPointOfInterestTypes;
@@ -60,23 +60,23 @@ import java.util.stream.Stream;
 public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
     /**
-     * The minimum distance that fireflies lose their alcove position at.
+     * The minimum distance that fireflies lose their luminescent soil position at.
      */
     private static final int TOO_FAR_DISTANCE = 48;
     /**
-     * The minimum distance that fireflies will immediately return to their alcove at.
+     * The minimum distance that fireflies will immediately return to their luminescent soil at.
      */
     private static final int MAX_WANDER_DISTANCE = 8;
-    public static final String ALCOVE_POS_KEY = "alcove_pos";
+    public static final String HOME_POS_KEY = "home_pos";
 
     private static final float MAX_SPEED = 0.5F;
 
-    private BlockPos alcovePos;
+    private BlockPos homePos;
 
-    private int cannotEnterAlcoveTicks;
-    int ticksLeftToFindAlcove;
+    private int cannotEnterHomeTicks;
+    int ticksLeftToFindHome;
     private int ticksInsideWater;
-    FireflyEntity.MoveToAlcoveGoal moveToAlcoveGoal;
+    MoveToHomeGoal moveToHomeGoal;
 
     public final double lightRandomValue;
 
@@ -98,11 +98,11 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(1, new FireflyEntity.EnterAlcoveGoal());
-        this.goalSelector.add(3, new FireflyEntity.ValidateAlcoveGoal());
-        this.goalSelector.add(5, new FireflyEntity.FindAlcoveGoal());
-        this.moveToAlcoveGoal = new FireflyEntity.MoveToAlcoveGoal();
-        this.goalSelector.add(5, this.moveToAlcoveGoal);
+        this.goalSelector.add(1, new FireflyEntity.EnterHomeGoal());
+        this.goalSelector.add(3, new FireflyEntity.ValidateHomeGoal());
+        this.goalSelector.add(5, new FireflyEntity.FindHomeGoal());
+        this.moveToHomeGoal = new FireflyEntity.MoveToHomeGoal();
+        this.goalSelector.add(5, this.moveToHomeGoal);
         this.goalSelector.add(8, new FireflyEntity.FireflyWanderAroundGoal());
         this.goalSelector.add(9, new SwimGoal(this));
     }
@@ -146,32 +146,32 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     }
 
 
-    // region +--------------------------+ Alcove Position +--------------------------+
+    // region +--------------------------+ Home Position +--------------------------+
 
-    public void setAlcovePos(BlockPos pos) {
-        this.alcovePos = pos;
+    public void setHomePos(BlockPos pos) {
+        this.homePos = pos;
     }
 
     @Debug
-    public boolean hasAlcovePos() {
-        return this.alcovePos != null;
+    public boolean hasHomePos() {
+        return this.homePos != null;
     }
 
     @Nullable
     @Debug
-    public BlockPos getAlcovePos() {
-        return this.alcovePos;
+    public BlockPos getHomePos() {
+        return this.homePos;
     }
 
-    void clearAlcovePos() {
-        this.alcovePos = null;
-        this.ticksLeftToFindAlcove = 200;
+    void clearHomePos() {
+        this.homePos = null;
+        this.ticksLeftToFindHome = 200;
     }
 
 
-    boolean canEnterAlcove() {
-        if (this.cannotEnterAlcoveTicks <= 0 && this.getTarget() == null) {
-            return !isNight(this.getWorld()) && !this.isAlcoveNearFire();
+    boolean canEnterHome() {
+        if (this.cannotEnterHomeTicks <= 0 && this.getTarget() == null) {
+            return !isNight(this.getWorld()) && !this.isHomeNearFire();
         } else {
             return false;
         }
@@ -182,36 +182,32 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         return world.getDimension().hasSkyLight() && world.isNight();
     }
 
-//    public void setCannotEnterAlcoveTicks(int cannotEnterHiveTicks) {
-//        this.cannotEnterAlcoveTicks = cannotEnterHiveTicks;
-//    }
-
     // endregion
 
-    // region +--------------------------+ Alcove Block Entity +--------------------------+
+    // region +--------------------------+ Home Block Entity +--------------------------+
 
 
-    private boolean isAlcoveNearFire() {
-        FireflyAlcoveBlockEntity fireflyAlcoveBlockEntity = this.getAlcove();
-        return fireflyAlcoveBlockEntity != null && fireflyAlcoveBlockEntity.isNearFire();
+    private boolean isHomeNearFire() {
+        LuminescentSoilBlockEntity luminescentSoilBlockEntity = this.getHome();
+        return luminescentSoilBlockEntity != null && luminescentSoilBlockEntity.isNearFire();
     }
 
-    private boolean doesAlcoveHaveSpace(BlockPos pos) {
+    private boolean doesHomeHaveSpace(BlockPos pos) {
         BlockEntity blockEntity = this.getWorld().getBlockEntity(pos);
-        return blockEntity instanceof FireflyAlcoveBlockEntity && !((FireflyAlcoveBlockEntity) blockEntity).isFullOfFireflies();
+        return blockEntity instanceof LuminescentSoilBlockEntity && !((LuminescentSoilBlockEntity) blockEntity).isFullOfFireflies();
     }
 
 
-    boolean hasValidAlcove() {
-        return this.getAlcove() != null;
+    boolean hasValidHome() {
+        return this.getHome() != null;
     }
 
     @Nullable
-    FireflyAlcoveBlockEntity getAlcove() {
-        if (this.alcovePos == null) {
+    LuminescentSoilBlockEntity getHome() {
+        if (this.homePos == null) {
             return null;
         } else {
-            return this.isTooFar(this.alcovePos) ? null : this.getWorld().getBlockEntity(this.alcovePos, ModBlockEntityTypes.FIREFLY_ALCOVE_BLOCK_ENTITY_TYPE).orElse(null);
+            return this.isTooFar(this.homePos) ? null : this.getWorld().getBlockEntity(this.homePos, ModBlockEntityTypes.LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE).orElse(null);
         }
     }
 
@@ -239,16 +235,16 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        if (this.hasAlcovePos()) {
-            assert this.getAlcovePos() != null;
-            nbt.put(ALCOVE_POS_KEY, NbtHelper.fromBlockPos(this.getAlcovePos()));
+        if (this.hasHomePos()) {
+            assert this.getHomePos() != null;
+            nbt.put(HOME_POS_KEY, NbtHelper.fromBlockPos(this.getHomePos()));
         }
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.alcovePos = NbtHelper.toBlockPos(nbt, ALCOVE_POS_KEY).orElse(null);
+        this.homePos = NbtHelper.toBlockPos(nbt, HOME_POS_KEY).orElse(null);
     }
 
     // endregion
@@ -272,16 +268,16 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     public void tickMovement() {
         super.tickMovement();
         if (!this.getWorld().isClient) {
-            if (this.cannotEnterAlcoveTicks > 0) {
-                this.cannotEnterAlcoveTicks--;
+            if (this.cannotEnterHomeTicks > 0) {
+                this.cannotEnterHomeTicks--;
             }
 
-            if (this.ticksLeftToFindAlcove > 0) {
-                this.ticksLeftToFindAlcove--;
+            if (this.ticksLeftToFindHome > 0) {
+                this.ticksLeftToFindHome--;
             }
 
-            if (this.age % 20 == 0 && !this.hasValidAlcove()) {
-                this.alcovePos = null;
+            if (this.age % 20 == 0 && !this.hasValidHome()) {
+                this.homePos = null;
             }
         }
     }
@@ -477,8 +473,8 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         @Nullable
         private Vec3d getRandomLocation() {
             Vec3d vec3d2;
-            if (FireflyEntity.this.hasValidAlcove() && !FireflyEntity.this.isWithinDistance(FireflyEntity.this.alcovePos, MAX_WANDER_DISTANCE)) {
-                Vec3d vec3d = Vec3d.ofCenter(FireflyEntity.this.alcovePos);
+            if (FireflyEntity.this.hasValidHome() && !FireflyEntity.this.isWithinDistance(FireflyEntity.this.homePos, MAX_WANDER_DISTANCE)) {
+                Vec3d vec3d = Vec3d.ofCenter(FireflyEntity.this.homePos);
                 vec3d2 = vec3d.subtract(FireflyEntity.this.getPos()).normalize();
             } else {
                 vec3d2 = FireflyEntity.this.getRotationVec(0.0F);
@@ -491,18 +487,18 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     }
 
     
-    class EnterAlcoveGoal extends FireflyEntity.NormalGoal {
+    class EnterHomeGoal extends FireflyEntity.NormalGoal {
 
         @Override
         public boolean canFireflyStart() {
-            if (FireflyEntity.this.alcovePos != null && FireflyEntity.this.canEnterAlcove() && FireflyEntity.this.alcovePos.isWithinDistance(FireflyEntity.this.getPos(), 2.0)) {
-                FireflyAlcoveBlockEntity fireflyAlcoveBlockEntity = FireflyEntity.this.getAlcove();
-                if (fireflyAlcoveBlockEntity != null) {
-                    if (!fireflyAlcoveBlockEntity.isFullOfFireflies()) {
+            if (FireflyEntity.this.homePos != null && FireflyEntity.this.canEnterHome() && FireflyEntity.this.homePos.isWithinDistance(FireflyEntity.this.getPos(), 2.0)) {
+                LuminescentSoilBlockEntity luminescentSoilBlockEntity = FireflyEntity.this.getHome();
+                if (luminescentSoilBlockEntity != null) {
+                    if (!luminescentSoilBlockEntity.isFullOfFireflies()) {
                         return true;
                     }
 
-                    FireflyEntity.this.alcovePos = null;
+                    FireflyEntity.this.homePos = null;
                 }
             }
             return false;
@@ -515,19 +511,19 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
         @Override
         public void start() {
-            FireflyAlcoveBlockEntity fireflyAlcoveBlockEntity = FireflyEntity.this.getAlcove();
-            if (fireflyAlcoveBlockEntity != null) {
-                fireflyAlcoveBlockEntity.tryEnterAlcove(FireflyEntity.this);
+            LuminescentSoilBlockEntity luminescentSoilBlockEntity = FireflyEntity.this.getHome();
+            if (luminescentSoilBlockEntity != null) {
+                luminescentSoilBlockEntity.tryEnterHome(FireflyEntity.this);
             }
         }
     }
 
 
-    class FindAlcoveGoal extends FireflyEntity.NormalGoal {
+    class FindHomeGoal extends FireflyEntity.NormalGoal {
 
         @Override
         public boolean canFireflyStart() {
-            return FireflyEntity.this.ticksLeftToFindAlcove == 0 && !FireflyEntity.this.hasAlcovePos() && FireflyEntity.this.canEnterAlcove();
+            return FireflyEntity.this.ticksLeftToFindHome == 0 && !FireflyEntity.this.hasHomePos() && FireflyEntity.this.canEnterHome();
         }
 
         @Override
@@ -537,29 +533,29 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
         @Override
         public void start() {
-            FireflyEntity.this.ticksLeftToFindAlcove = 200;
-            List<BlockPos> list = this.getNearbyFreeAlcoves();
+            FireflyEntity.this.ticksLeftToFindHome = 200;
+            List<BlockPos> list = this.getNearbyFreeHomes();
             if (!list.isEmpty()) {
                 for (BlockPos blockPos : list) {
-                    if (!FireflyEntity.this.moveToAlcoveGoal.isPossibleAlcove(blockPos)) {
-                        FireflyEntity.this.alcovePos = blockPos;
+                    if (!FireflyEntity.this.moveToHomeGoal.isPossibleHome(blockPos)) {
+                        FireflyEntity.this.homePos = blockPos;
                         return;
                     }
                 }
 
-                FireflyEntity.this.moveToAlcoveGoal.clearPossibleAlcove();
-                FireflyEntity.this.alcovePos = list.getFirst();
+                FireflyEntity.this.moveToHomeGoal.clearPossibleHome();
+                FireflyEntity.this.homePos = list.getFirst();
             }
         }
 
-        private List<BlockPos> getNearbyFreeAlcoves() {
+        private List<BlockPos> getNearbyFreeHomes() {
             BlockPos blockPos = FireflyEntity.this.getBlockPos();
             PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)FireflyEntity.this.getWorld()).getPointOfInterestStorage();
             Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(
                     poiType -> poiType.matchesKey(ModPointOfInterestTypes.FIREFLY_HOME), blockPos, 20, PointOfInterestStorage.OccupationStatus.ANY
             );
             return stream.map(PointOfInterest::getPos)
-                    .filter(FireflyEntity.this::doesAlcoveHaveSpace)
+                    .filter(FireflyEntity.this::doesHomeHaveSpace)
                     .sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)))
                     .collect(Collectors.toList());
         }
@@ -567,26 +563,26 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
 
     @Debug
-    public class MoveToAlcoveGoal extends FireflyEntity.NormalGoal {
+    public class MoveToHomeGoal extends FireflyEntity.NormalGoal {
 
         int ticks = FireflyEntity.this.getWorld().random.nextInt(10);
-        final List<BlockPos> possibleAlcoves = Lists.newArrayList();
+        final List<BlockPos> possibleHomes = Lists.newArrayList();
         @Nullable
         private Path path;
         private int ticksUntilLost;
 
-        MoveToAlcoveGoal() {
+        MoveToHomeGoal() {
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
         public boolean canFireflyStart() {
-            return FireflyEntity.this.alcovePos != null
-                    && !FireflyEntity.this.isTooFar(FireflyEntity.this.alcovePos)
+            return FireflyEntity.this.homePos != null
+                    && !FireflyEntity.this.isTooFar(FireflyEntity.this.homePos)
                     && !FireflyEntity.this.hasPositionTarget()
-                    && FireflyEntity.this.canEnterAlcove()
-                    && !this.isCloseEnough(FireflyEntity.this.alcovePos)
-                    && FireflyEntity.this.getWorld().getBlockState(FireflyEntity.this.alcovePos).getBlock() == ModBlocks.FIREFLY_ALCOVE;
+                    && FireflyEntity.this.canEnterHome()
+                    && !this.isCloseEnough(FireflyEntity.this.homePos)
+                    && FireflyEntity.this.getWorld().getBlockState(FireflyEntity.this.homePos).getBlock() == ModBlocks.LUMINESCENT_SOIL;
         }
 
         @Override
@@ -611,25 +607,25 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
         @Override
         public void tick() {
-            if (FireflyEntity.this.alcovePos != null) {
+            if (FireflyEntity.this.homePos != null) {
                 this.ticks++;
                 if (this.ticks > this.getTickCount(2400)) {
-                    this.makeChosenAlcovePossibleAlcove();
+                    this.makeChosenHomePossibleHome();
                 } else if (!FireflyEntity.this.navigation.isFollowingPath()) {
-                    if (!FireflyEntity.this.isWithinDistance(FireflyEntity.this.alcovePos, MAX_WANDER_DISTANCE)) {
-                        if (FireflyEntity.this.isTooFar(FireflyEntity.this.alcovePos)) {
-                            FireflyEntity.this.clearAlcovePos();
+                    if (!FireflyEntity.this.isWithinDistance(FireflyEntity.this.homePos, MAX_WANDER_DISTANCE)) {
+                        if (FireflyEntity.this.isTooFar(FireflyEntity.this.homePos)) {
+                            FireflyEntity.this.clearHomePos();
                         } else {
-                            FireflyEntity.this.startMovingTo(FireflyEntity.this.alcovePos);
+                            FireflyEntity.this.startMovingTo(FireflyEntity.this.homePos);
                         }
                     } else {
-                        boolean bl = this.startMovingToFar(FireflyEntity.this.alcovePos);
+                        boolean bl = this.startMovingToFar(FireflyEntity.this.homePos);
                         if (!bl) {
-                            this.makeChosenAlcovePossibleAlcove();
+                            this.makeChosenHomePossibleHome();
                         } else if (this.path != null && Objects.requireNonNull(FireflyEntity.this.navigation.getCurrentPath()).equalsPath(this.path)) {
                             this.ticksUntilLost++;
                             if (this.ticksUntilLost > 60) {
-                                FireflyEntity.this.clearAlcovePos();
+                                FireflyEntity.this.clearHomePos();
                                 this.ticksUntilLost = 0;
                             }
                         } else {
@@ -647,28 +643,28 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
             return FireflyEntity.this.navigation.getCurrentPath() != null && FireflyEntity.this.navigation.getCurrentPath().reachesTarget();
         }
 
-        boolean isPossibleAlcove(BlockPos pos) {
-            return this.possibleAlcoves.contains(pos);
+        boolean isPossibleHome(BlockPos pos) {
+            return this.possibleHomes.contains(pos);
         }
 
-        private void addPossibleAlcove(BlockPos pos) {
-            this.possibleAlcoves.add(pos);
+        private void addPossibleHome(BlockPos pos) {
+            this.possibleHomes.add(pos);
 
-            while (this.possibleAlcoves.size() > 3) {
-                this.possibleAlcoves.removeFirst();
+            while (this.possibleHomes.size() > 3) {
+                this.possibleHomes.removeFirst();
             }
         }
 
-        void clearPossibleAlcove() {
-            this.possibleAlcoves.clear();
+        void clearPossibleHome() {
+            this.possibleHomes.clear();
         }
 
-        private void makeChosenAlcovePossibleAlcove() {
-            if (FireflyEntity.this.alcovePos != null) {
-                this.addPossibleAlcove(FireflyEntity.this.alcovePos);
+        private void makeChosenHomePossibleHome() {
+            if (FireflyEntity.this.homePos != null) {
+                this.addPossibleHome(FireflyEntity.this.homePos);
             }
 
-            FireflyEntity.this.clearAlcovePos();
+            FireflyEntity.this.clearHomePos();
         }
 
         private boolean isCloseEnough(BlockPos pos) {
@@ -682,14 +678,14 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     }
 
 
-    class ValidateAlcoveGoal extends FireflyEntity.NormalGoal {
+    class ValidateHomeGoal extends FireflyEntity.NormalGoal {
         private final int ticksUntilNextValidate = MathHelper.nextInt(FireflyEntity.this.random, 20, 40);
         private long lastValidateTime = -1L;
 
         @Override
         public void start() {
-            if (FireflyEntity.this.alcovePos != null && FireflyEntity.this.getWorld().isPosLoaded(FireflyEntity.this.alcovePos) && !FireflyEntity.this.hasValidAlcove()) {
-                FireflyEntity.this.clearAlcovePos();
+            if (FireflyEntity.this.homePos != null && FireflyEntity.this.getWorld().isPosLoaded(FireflyEntity.this.homePos) && !FireflyEntity.this.hasValidHome()) {
+                FireflyEntity.this.clearHomePos();
             }
 
             this.lastValidateTime = FireflyEntity.this.getWorld().getTime();

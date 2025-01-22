@@ -12,7 +12,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 public class ModPointOfInterestTypes {
 
 
-    public static final RegistryKey<PointOfInterestType> FIREFLY_HOME = register("firefly_home", 0, 1, ModBlocks.FIREFLY_ALCOVE);
+    public static final RegistryKey<PointOfInterestType> FIREFLY_HOME = register("firefly_home", 0, 1, ModBlocks.LUMINESCENT_SOIL);
 
     @SuppressWarnings("SameParameterValue")
     private static RegistryKey<PointOfInterestType> register(String name, int ticketCount, int searchDistance, Block block) {

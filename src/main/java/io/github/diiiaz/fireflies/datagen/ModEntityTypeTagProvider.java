@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -19,6 +20,7 @@ public class ModEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup registries) {
-        this.getOrCreateTagBuilder(ModTags.EntityTypes.ALCOVE_INHABITORS).add(ModEntities.FIREFLY);
+        this.getOrCreateTagBuilder(ModTags.EntityTypes.LUMINESCENT_SOIL_INHABITORS).add(ModEntities.FIREFLY);
+        this.getOrCreateTagBuilder(EntityTypeTags.FROG_FOOD).add(ModEntities.FIREFLY);
     }
 }

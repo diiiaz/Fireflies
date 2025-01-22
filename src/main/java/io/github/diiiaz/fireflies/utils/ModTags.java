@@ -13,7 +13,7 @@ public class ModTags {
     public static class EntityTypes {
 
 
-        public static final TagKey<EntityType<?>> ALCOVE_INHABITORS = createTag("alcove_inhabitors");
+        public static final TagKey<EntityType<?>> LUMINESCENT_SOIL_INHABITORS = createTag("luminescent_soil_inhabitors");
 
 
         private static TagKey<EntityType<?>> createTag(@SuppressWarnings("SameParameterValue") String name) {

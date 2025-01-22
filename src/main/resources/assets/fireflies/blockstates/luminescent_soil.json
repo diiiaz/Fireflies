@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "fireflies_amount=0": {
+      "model": "fireflies:block/luminescent_soil/empty"
+    },
+    "": {
+      "model": "fireflies:block/luminescent_soil/occupied"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "block_state_property": "fireflies_amount",
+    "property": "minecraft:block_state",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "fireflies:block/luminescent_soil/occupied"
+        },
+        "when": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "fireflies:block/luminescent_soil/empty"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 package io.github.diiiaz.fireflies.block;
 
 import io.github.diiiaz.fireflies.Mod;
-import io.github.diiiaz.fireflies.block.custom.FireflyAlcove;
+import io.github.diiiaz.fireflies.block.custom.LuminescentSoilBlock;
 import io.github.diiiaz.fireflies.block.custom.FireflyLantern;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.*;
@@ -31,9 +31,9 @@ public class ModBlocks {
                     .pistonBehavior(PistonBehavior.DESTROY)
             ), true);
 
-    public static final Block FIREFLY_ALCOVE = registerBlock("firefly_alcove",
-            new FireflyAlcove(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("firefly_alcove")))
+    public static final Block LUMINESCENT_SOIL = registerBlock("luminescent_soil",
+            new LuminescentSoilBlock(AbstractBlock.Settings.create()
+                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("luminescent_soil")))
                     .mapColor(MapColor.DIRT_BROWN)
                     .strength(0.5F)
                     .sounds(BlockSoundGroup.ROOTED_DIRT)
@@ -57,10 +57,12 @@ public class ModBlocks {
     }
 
 
+
+
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> {
             entries.addAfter(Items.SOUL_LANTERN, FIREFLY_LANTERN.asItem());
-            entries.addAfter(Items.BEEHIVE, FIREFLY_ALCOVE.asItem());
+            entries.addAfter(Items.BEEHIVE, LUMINESCENT_SOIL.asItem());
         });
 
     }

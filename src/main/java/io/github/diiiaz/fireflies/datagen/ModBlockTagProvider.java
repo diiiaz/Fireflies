@@ -18,10 +18,10 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         this.getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE)
-                .add(ModBlocks.FIREFLY_ALCOVE);
+                .add(ModBlocks.LUMINESCENT_SOIL);
 
         this.getOrCreateTagBuilder(BlockTags.DIRT)
-                .add(ModBlocks.FIREFLY_ALCOVE);
+                .add(ModBlocks.LUMINESCENT_SOIL);
 
         this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
                 .add(ModBlocks.FIREFLY_LANTERN);

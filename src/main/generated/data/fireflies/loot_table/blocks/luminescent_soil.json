@@ -30,16 +30,16 @@
                 {
                   "function": "minecraft:copy_components",
                   "include": [
-                    "fireflies:alcove_fireflies_amount"
+                    "fireflies:luminescent_soil_fireflies_amount"
                   ],
                   "source": "block_entity"
                 }
               ],
-              "name": "fireflies:firefly_alcove"
+              "name": "fireflies:luminescent_soil"
             },
             {
               "type": "minecraft:item",
-              "name": "fireflies:firefly_alcove"
+              "name": "fireflies:luminescent_soil"
             }
           ]
         }

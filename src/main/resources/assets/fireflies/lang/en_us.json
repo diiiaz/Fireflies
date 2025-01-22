@@ -2,9 +2,9 @@
   "entity.fireflies.firefly": "Firefly",
 
   "block.fireflies.firefly_lantern": "Firefly Lantern",
-  "block.fireflies.firefly_alcove": "Firefly Alcove",
+  "block.fireflies.luminescent_soil": "Luminescent Soil",
 
-  "container.firefly_alcove.fireflies": "Fireflies: %s / %s",
+  "container.luminescent_soil.fireflies": "Fireflies: %s / %s",
 
   "item.fireflies.firefly_bottle": "Firefly Bottle",
 

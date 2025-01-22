@@ -21,7 +21,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -70,11 +69,7 @@ public class FireflyLantern extends LanternBlock {
         double x = (double)pos.getX() + (double)0.5F + (random.nextDouble() - (double)0.5F) * 0.2;
         double y = (double)pos.getY() + 0.2 + (random.nextDouble() - (double)0.5F) * 0.2;
         double z = (double)pos.getZ() + (double)0.5F + (random.nextDouble() - (double)0.5F) * 0.2;
-        world.addParticle(new FireflyParticleEffect(ColorHelper.fromFloats(1.0F,
-                MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.0F), // red
-                MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.0F), // green
-                0.0F), // blue
-                1.0F), x, y, z, 0.0F, 0.0F, 0.0F);
+        world.addParticle(FireflyParticleEffect.createDefault(world.getRandom()), x, y, z, 0.0F, 0.0F, 0.0F);
     }
 
     @Override
