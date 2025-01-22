@@ -353,7 +353,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         FireflyBottle.playBottleSound(serverWorld, player, itemStack);
         ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, ModItems.FIREFLY_BOTTLE.getDefaultStack());
         player.setStackInHand(hand, itemStack2);
-        this.discard();
+        this.remove(RemovalReason.DISCARDED);
         return ActionResult.SUCCESS_SERVER;
     }
 
@@ -418,7 +418,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
                     0, 0, 0,
                     0.01);
         }
-        this.discard();
+        this.remove(Entity.RemovalReason.KILLED);
     }
 
     // endregion

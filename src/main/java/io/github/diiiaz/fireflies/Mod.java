@@ -7,7 +7,7 @@ import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.item.ModItems;
-import io.github.diiiaz.fireflies.particle.ModParticles;
+import io.github.diiiaz.fireflies.particle.ModParticleTypes;
 import io.github.diiiaz.fireflies.point_of_interest.ModPointOfInterestTypes;
 import io.github.diiiaz.fireflies.sound.ModSounds;
 import io.github.diiiaz.fireflies.utils.ModTags;
@@ -27,7 +27,9 @@ public class Mod implements ModInitializer {
 
 		ModTags.initialize();
 		ModPointOfInterestTypes.initialize();
-		ModParticles.initialize();
+
+		ModParticleTypes.initialize();
+
 		ModProperties.initialize();
 		ModDataComponentTypes.initialize();
 

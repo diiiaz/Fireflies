@@ -4,24 +4,26 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
-public class FireflyParticle extends SpriteBillboardParticle {
+public class FireflyParticle extends AbstractDustParticle<FireflyParticleEffect> {
 
     Vec3d wantedPosition = Vec3d.ZERO;
 
-    FireflyParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z);
+    protected FireflyParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, FireflyParticleEffect parameters, SpriteProvider spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
         this.gravityStrength = 0.0F;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
-        this.scale *= 0.75F;
         this.maxAge = this.random.nextBetween(50, 100);
-        this.setSpriteForAge(spriteProvider);
+        Vector3f color = parameters.getColor();
+        this.setColor(color.x, color.y, color.z);
         this.setAlpha(0.0F);
+        this.setSpriteForAge(spriteProvider);
     }
 
     @Override
@@ -65,15 +67,17 @@ public class FireflyParticle extends SpriteBillboardParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public static class Factory implements ParticleFactory<SimpleParticleType> {
+    public static class Factory implements ParticleFactory<FireflyParticleEffect> {
         private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            return new FireflyParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
+        @Override
+        public @Nullable Particle createParticle(FireflyParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+            return new FireflyParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters, this.spriteProvider);
         }
+
     }
 }
