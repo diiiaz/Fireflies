@@ -44,6 +44,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
     private static final String FIREFLIES_KEY = "fireflies";
     private static final int MIN_TIME_BEFORE_RELEASING_FIREFLY = 20;
     private int timeSinceReleasingFirefly = 0;
+    private final List<Firefly> fireflies = Lists.newArrayList();
     static final List<String> IRRELEVANT_NBT_KEYS = Arrays.asList(
             "Air",
             "ArmorDropChances",
@@ -68,15 +69,13 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
             "SleepingX",
             "SleepingY",
             "SleepingZ",
-            "CannotEnterHiveTicks",
-            "TicksSincePollination",
-            "CropsGrownSincePollination",
+            "CannotEnterLuminescentSoilTicks",
             "Passengers",
             "leash",
             "UUID",
             FireflyEntity.HOME_POS_KEY
     );
-    private final List<Firefly> fireflies = Lists.newArrayList();
+
 
     public LuminescentSoilBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE, pos, state);
@@ -257,6 +256,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
         builder.add(ModDataComponentTypes.LUMINESCENT_SOIL_FIREFLIES_AMOUNT, this.createFirefliesData());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void removeFromCopiedStackNbt(NbtCompound nbt) {
         super.removeFromCopiedStackNbt(nbt);
@@ -295,6 +295,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
                         .apply(instance, LuminescentSoilBlockEntity.FireflyData::new)
         );
         public static final Codec<List<LuminescentSoilBlockEntity.FireflyData>> LIST_CODEC = CODEC.listOf();
+        @SuppressWarnings("deprecation")
         public static final PacketCodec<ByteBuf, LuminescentSoilBlockEntity.FireflyData> PACKET_CODEC = PacketCodec.tuple(
                 NbtComponent.PACKET_CODEC,
                 LuminescentSoilBlockEntity.FireflyData::entityData,
