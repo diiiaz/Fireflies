@@ -42,6 +42,8 @@ import java.util.Objects;
 public class LuminescentSoilBlockEntity extends BlockEntity{
 
     private static final String FIREFLIES_KEY = "fireflies";
+    private static final int MIN_TIME_BEFORE_RELEASING_FIREFLY = 20;
+    private int timeSinceReleasingFirefly = 0;
     static final List<String> IRRELEVANT_NBT_KEYS = Arrays.asList(
             "Air",
             "ArmorDropChances",
@@ -144,6 +146,13 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
             return false;
         }
 
+        if (world.getBlockEntity(pos) != null && !forceRelease) {
+            //noinspection DataFlowIssue
+            if (((LuminescentSoilBlockEntity) world.getBlockEntity(pos)).timeSinceReleasingFirefly < MIN_TIME_BEFORE_RELEASING_FIREFLY) {
+                return false;
+            }
+        }
+
         Direction direction = Direction.UP;
         BlockPos blockPos = pos.offset(direction);
         boolean blockedByCollision = !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty();
@@ -173,6 +182,10 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
         }
         world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
         world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, world.getBlockState(pos)));
+        if (world.getBlockEntity(pos) != null) {
+            //noinspection DataFlowIssue
+            ((LuminescentSoilBlockEntity) world.getBlockEntity(pos)).timeSinceReleasingFirefly = 0;
+        }
         return world.spawnEntity(entity);
     }
 
@@ -198,14 +211,15 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
 
     public static void serverTick(World world, BlockPos pos, BlockState state, LuminescentSoilBlockEntity blockEntity) {
         tickFireflies(world, pos, state, blockEntity.fireflies);
-        if (!blockEntity.fireflies.isEmpty() && world.getRandom().nextDouble() < 0.005) {
-            double x = (double)pos.getX() + 0.5;
-            double y = (double)pos.getY() + 0.5;
-            double z = (double)pos.getZ() + 0.5;
-            world.playSound(null, x, y, z, ModSounds.FIREFLY_AMBIENT, SoundCategory.BLOCKS, 0.4F, MathHelper.map(world.random.nextFloat(), 0F, 1F, 0.9F, 1.1F));
+        if (!blockEntity.fireflies.isEmpty()) {
+            blockEntity.timeSinceReleasingFirefly += world.getRandom().nextBetween(1, 15);
+            if (world.getRandom().nextDouble() < 0.005) {
+                double x = (double)pos.getX() + 0.5;
+                double y = (double)pos.getY() + 0.5;
+                double z = (double)pos.getZ() + 0.5;
+                world.playSound(null, x, y, z, ModSounds.FIREFLY_AMBIENT, SoundCategory.BLOCKS, 0.4F, MathHelper.map(world.random.nextFloat(), 0F, 1F, 0.9F, 1.1F));
+            }
         }
-
-//        DebugInfoSender.sendBeehiveDebugData(world, pos, state, blockEntity);
     }
 
     @Override
