@@ -59,7 +59,7 @@ public class FireflyLantern extends LanternBlock {
     }
 
     public static int getLuminance(BlockState state) {
-        return getFirefliesAmount(state) * 3;
+        return (int) MathHelper.map(getFirefliesAmount(state), ModProperties.FIREFLIES_LANTERN_AMOUNT_MIN, ModProperties.FIREFLIES_LANTERN_AMOUNT_MAX, 0, 15);
     }
 
 
