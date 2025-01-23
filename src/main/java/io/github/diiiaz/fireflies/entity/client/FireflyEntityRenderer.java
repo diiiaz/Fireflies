@@ -4,7 +4,6 @@ import io.github.diiiaz.fireflies.Mod;
 import io.github.diiiaz.fireflies.entity.ModEntityModelLayers;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.entity.custom.FireflyVariant;
-import io.github.diiiaz.fireflies.utils.ModChat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRendererFactory;

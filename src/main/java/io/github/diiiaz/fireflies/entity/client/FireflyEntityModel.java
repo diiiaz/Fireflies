@@ -9,12 +9,10 @@ import net.minecraft.client.render.entity.model.EntityModel;
 @Environment(EnvType.CLIENT)
 public class FireflyEntityModel extends EntityModel<FireflyEntityRenderState> {
 
-	private final ModelPart body_bone;
-
-	public FireflyEntityModel(ModelPart root) {
+    public FireflyEntityModel(ModelPart root) {
 		super(root, RenderLayer::getEntityCutout);
-		this.body_bone = root.getChild("body_bone");
-	}
+        root.getChild("body_bone");
+    }
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
