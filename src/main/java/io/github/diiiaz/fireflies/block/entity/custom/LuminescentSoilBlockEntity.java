@@ -72,8 +72,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
             "CannotEnterLuminescentSoilTicks",
             "Passengers",
             "leash",
-            "UUID",
-            FireflyEntity.HOME_POS_KEY
+            "UUID"
     );
 
 

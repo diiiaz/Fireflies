@@ -22,4 +22,5 @@ public class FireflyEntityModel extends EntityModel<FireflyEntityRenderState> {
 		modelPartData.addChild("body_bone", ModelPartBuilder.create().uv(0, -2).cuboid(0.0F, -1.5F, -1.0F, 0.0F, 1.0F, 2.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 23.5F, 0.0F));
 		return TexturedModelData.of(modelData, 4, 1);
 	}
+
 }

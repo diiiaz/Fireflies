@@ -24,6 +24,9 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,44 +44,40 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.annotation.Debug;
+import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
-    /**
-     * The minimum distance that fireflies lose their luminescent soil position at.
-     */
-    private static final int TOO_FAR_DISTANCE = 48;
-    /**
-     * The minimum distance that fireflies will immediately return to their luminescent soil at.
-     */
-    private static final int MAX_WANDER_DISTANCE = 8;
-    public static final String HOME_POS_KEY = "home_pos";
-
     private static final float MAX_SPEED = 0.5F;
+    private static final int TOO_FAR_DISTANCE = 48;
+    private static final int MAX_WANDER_DISTANCE = 8;
+    private static final String HOME_POS_KEY = "HomePos";
+    private static final String VARIANT_KEY = "Variant";
+    private static final String LIGHT_FREQUENCY_OFFSET_KEY = "LightFrequencyOffset";
+
+    private static final TrackedData<Integer> DATA_ID_TYPE_VARIANT = DataTracker.registerData(FireflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Float> LIGHT_FREQUENCY_OFFSET = DataTracker.registerData(FireflyEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private BlockPos homePos;
-
     private int cannotEnterHomeTicks;
-    int ticksLeftToFindHome;
+    private int ticksLeftToFindHome;
     private int ticksInsideWater;
-    MoveToHomeGoal moveToHomeGoal;
-
-    public final double lightRandomValue;
+    private MoveToHomeGoal moveToHomeGoal;
 
 
     // +--------------------------+ Defaults +--------------------------+
@@ -86,7 +85,6 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     public FireflyEntity(EntityType<? extends FireflyEntity> entityType, World world) {
         super(entityType, world);
         this.experiencePoints = 0;
-        this.lightRandomValue = getRandom().nextFloat();
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.lookControl = new FireflyLookControl(this);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
@@ -107,6 +105,13 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         this.goalSelector.add(9, new SwimGoal(this));
     }
 
+    @Override
+    @Nullable
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+        this.dataTracker.set(LIGHT_FREQUENCY_OFFSET, this.random.nextFloat());
+        this.setVariant(getRandomVariant(random).orElse(0));
+        return super.initialize(world, difficulty, spawnReason, entityData);
+    }
 
     @Override
     public boolean isPushable() {
@@ -145,6 +150,39 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         return new Vec3d(0.0, 0.5F * this.getStandingEyeHeight(), this.getWidth() * 0.2F);
     }
 
+
+    public float getLightFrequencyOffset() {
+        return this.dataTracker.get(LIGHT_FREQUENCY_OFFSET);
+    }
+
+
+    // region +--------------------------+ Variants +--------------------------+
+
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(DATA_ID_TYPE_VARIANT, 0);
+        builder.add(LIGHT_FREQUENCY_OFFSET, 0.0F);
+    }
+
+
+    public int getVariant() {
+        return this.dataTracker.get(DATA_ID_TYPE_VARIANT);
+    }
+
+    private void setVariant(int variant) {
+        this.dataTracker.set(DATA_ID_TYPE_VARIANT, variant);
+    }
+
+    private Optional<Integer> getRandomVariant(Random random) {
+        DataPool.Builder<Integer> pool = DataPool.builder();
+        Arrays.stream(FireflyVariant.values()).forEach(variant -> pool.add(variant.getId(), variant.getWeight()));
+        return pool.build().getDataOrEmpty(random);
+    }
+
+
+    // endregion
 
     // region +--------------------------+ Home Position +--------------------------+
 
@@ -232,11 +270,14 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
     // region +--------------------------+ NBT +--------------------------+
 
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
+        nbt.putInt(VARIANT_KEY, this.getVariant());
+        nbt.putFloat(LIGHT_FREQUENCY_OFFSET_KEY, this.getLightFrequencyOffset());
         if (this.hasHomePos()) {
-            assert this.getHomePos() != null;
+            //noinspection DataFlowIssue
             nbt.put(HOME_POS_KEY, NbtHelper.fromBlockPos(this.getHomePos()));
         }
     }
@@ -245,7 +286,10 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.homePos = NbtHelper.toBlockPos(nbt, HOME_POS_KEY).orElse(null);
+        this.dataTracker.set(LIGHT_FREQUENCY_OFFSET, nbt.getFloat(LIGHT_FREQUENCY_OFFSET_KEY));
+        this.setVariant(nbt.getInt(VARIANT_KEY));
     }
+
 
     // endregion
 
@@ -253,7 +297,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        return world.getBlockState(pos).isAir() ? 10.0F : 0.0F;
+        return world.getBlockState(pos).isAir() ? 20.0F : 0.0F;
     }
 
     boolean isTooFar(BlockPos pos) {

@@ -14,7 +14,7 @@ public class ModEntities {
 
 
     public static final EntityType<FireflyEntity> FIREFLY = register(
-            "firefly", EntityType.Builder.create(FireflyEntity::new, SpawnGroup.CREATURE).dimensions(0.2F, 0.2F).eyeHeight(0.3F).maxTrackingRange(8)
+            "firefly", EntityType.Builder.create(FireflyEntity::new, SpawnGroup.CREATURE).dimensions(0.2F, 0.2F).eyeHeight(0.1F).maxTrackingRange(8)
     );
 
     private static <T extends Entity> EntityType<T> register(@SuppressWarnings("SameParameterValue") String id, EntityType.Builder<T> type) {
