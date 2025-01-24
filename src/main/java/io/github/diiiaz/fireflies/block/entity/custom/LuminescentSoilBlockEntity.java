@@ -53,8 +53,8 @@ public class LuminescentSoilBlockEntity extends BlockEntity {
         return false;
     }
 
-    public boolean hasNoFireflies() {
-        return this.fireflies.isEmpty();
+    public boolean hasFireflies() {
+        return !this.fireflies.isEmpty();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -170,7 +170,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity {
 
     public static void serverTick(World world, BlockPos pos, BlockState state, LuminescentSoilBlockEntity blockEntity) {
         tickFireflies(world, pos, state, blockEntity.fireflies);
-        if (!blockEntity.fireflies.isEmpty()) {
+        if (blockEntity.hasFireflies()) {
             blockEntity.timeSinceReleasingFirefly += world.getRandom().nextBetween(1, 15);
             if (world.getRandom().nextDouble() < 0.005) {
                 double x = (double)pos.getX() + 0.5;

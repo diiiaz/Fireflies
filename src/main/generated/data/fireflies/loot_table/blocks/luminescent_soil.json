@@ -30,7 +30,7 @@
                 {
                   "function": "minecraft:copy_components",
                   "include": [
-                    "fireflies:fireflies_amount"
+                    "fireflies:fireflies"
                   ],
                   "source": "block_entity"
                 }

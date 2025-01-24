@@ -36,25 +36,52 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class LuminescentSoilBlock extends BlockWithEntity {
     
     public static final MapCodec<LuminescentSoilBlock> CODEC = createCodec(LuminescentSoilBlock::new);
     public static final IntProperty FIREFLIES_AMOUNT = ModProperties.LUMINESCENT_SOIL_FIREFLIES_AMOUNT;
 
-    @Override
-    public MapCodec<LuminescentSoilBlock> getCodec() {
-        return CODEC;
-    }
-
     public LuminescentSoilBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(FIREFLIES_AMOUNT, 0));
     }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return world.isClient ? null : validateTicker(type, ModBlockEntityTypes.LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE, LuminescentSoilBlockEntity::serverTick);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new LuminescentSoilBlockEntity(pos, state);
+    }
+
+    @Override
+    public MapCodec<LuminescentSoilBlock> getCodec() {
+        return CODEC;
+    }
+
+
+
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FIREFLIES_AMOUNT);
+    }
+
+
+
+
 
     @Override
     protected boolean hasComparatorOutput(BlockState state) {
@@ -82,22 +109,6 @@ public class LuminescentSoilBlock extends BlockWithEntity {
         }
     }
 
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FIREFLIES_AMOUNT);
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new LuminescentSoilBlockEntity(pos, state);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : validateTicker(type, ModBlockEntityTypes.LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE, LuminescentSoilBlockEntity::serverTick);
-    }
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
@@ -106,7 +117,7 @@ public class LuminescentSoilBlock extends BlockWithEntity {
                 && serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
                 && world.getBlockEntity(pos) instanceof LuminescentSoilBlockEntity LuminescentSoilBlockEntity) {
             int i = state.get(FIREFLIES_AMOUNT);
-            boolean bl = !LuminescentSoilBlockEntity.hasNoFireflies();
+            boolean bl = LuminescentSoilBlockEntity.hasFireflies();
             if (bl || i > 0) {
                 ItemStack itemStack = new ItemStack(this);
                 itemStack.applyComponentsFrom(LuminescentSoilBlockEntity.createComponentMap());
@@ -120,6 +131,11 @@ public class LuminescentSoilBlock extends BlockWithEntity {
         return super.onBreak(world, pos, state, player);
     }
 
+    @Override
+    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+        ((LuminescentSoilBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).tryReleaseFireflies(state, true);
+        super.onExploded(state, world, pos, explosion, stackMerger);
+    }
 
     @Override
     protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
@@ -166,7 +182,7 @@ public class LuminescentSoilBlock extends BlockWithEntity {
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         super.appendTooltip(stack, context, tooltip, options);
         int firefliesAmount = stack.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, List.of()).size();
-        tooltip.add(Text.translatable("container.luminescent_soil.fireflies", firefliesAmount, ModProperties.LUMINESCENT_SOIL_AMOUNT_MAX).formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("container.fireflies", firefliesAmount, ModProperties.LUMINESCENT_SOIL_AMOUNT_MAX).formatted(Formatting.GRAY));
     }
 
 }

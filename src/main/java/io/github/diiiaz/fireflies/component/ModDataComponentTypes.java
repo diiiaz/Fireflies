@@ -15,7 +15,7 @@ public class ModDataComponentTypes {
 
 
     public static final ComponentType<List<FireflyData>> FIREFLIES_AMOUNT = register(
-            "fireflies_amount", builder -> builder
+            "fireflies", builder -> builder
                     .codec(FireflyData.LIST_CODEC)
                     .packetCodec(FireflyData.PACKET_CODEC.collect(PacketCodecs.toList()))
                     .cache()

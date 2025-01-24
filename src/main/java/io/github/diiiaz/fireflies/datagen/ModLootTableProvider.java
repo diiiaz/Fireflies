@@ -24,11 +24,25 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         addDrop(ModBlocks.LUMINESCENT_SOIL, this::luminescentSoilDrops);
-        addDrop(ModBlocks.FIREFLY_LANTERN);
+        addDrop(ModBlocks.FIREFLY_LANTERN, this::fireflyLanternDrops);
     }
 
 
     public LootTable.Builder luminescentSoilDrops(Block drop) {
+        return LootTable.builder()
+                .pool(
+                        LootPool.builder()
+                                .rolls(ConstantLootNumberProvider.create(1.0F))
+                                .with(
+                                        ItemEntry.builder(drop)
+                                                .conditionally(this.createSilkTouchCondition())
+                                                .apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(ModDataComponentTypes.FIREFLIES_AMOUNT))
+                                                .alternatively(ItemEntry.builder(drop))
+                                )
+                );
+    }
+
+    public LootTable.Builder fireflyLanternDrops(Block drop) {
         return LootTable.builder()
                 .pool(
                         LootPool.builder()

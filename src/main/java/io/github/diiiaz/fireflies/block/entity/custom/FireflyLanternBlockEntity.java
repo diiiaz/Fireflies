@@ -5,6 +5,7 @@ import io.github.diiiaz.fireflies.Mod;
 import io.github.diiiaz.fireflies.block.custom.FireflyLantern;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
+import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.entity.custom.FireflyVariant;
 import io.github.diiiaz.fireflies.particle.custom.FireflyParticleEffect;
 import io.github.diiiaz.fireflies.sound.ModSounds;
@@ -12,17 +13,20 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -55,13 +59,11 @@ public class FireflyLanternBlockEntity extends BlockEntity {
     public void addFirefly(FireflyData fireflyData) { addFirefly(new FireflyData.Firefly(fireflyData)); }
 
     public void addFirefly(FireflyData.Firefly firefly) {
-        if (this.world == null || this.world.isClient) { return; }
         this.fireflies.add(firefly);
         updateState();
     }
 
     public FireflyData removeFirefly() {
-        if (this.world == null || this.world.isClient) { return null; }
         FireflyData result = this.fireflies.removeLast().createData();
         updateState();
         return result;
@@ -75,6 +77,37 @@ public class FireflyLanternBlockEntity extends BlockEntity {
         }
     }
 
+    public void tryReleaseFireflies(BlockState state) {
+        List<Entity> list = Lists.newArrayList();
+        this.fireflies.removeIf(firefly -> releaseFirefly(this.world, this.pos, state, firefly.createData(), list));
+        if (!list.isEmpty()) {
+            super.markDirty();
+        }
+    }
+
+    private static boolean releaseFirefly(World world, BlockPos pos, BlockState ignoredState, FireflyData firefly, @Nullable List<Entity> entities) {
+        Entity entity = firefly.loadEntity(world, pos);
+
+        if (entity == null) {
+            return false;
+        }
+
+        if (entity instanceof FireflyEntity fireflyEntity) {
+
+            if (entities != null) {
+                entities.add(fireflyEntity);
+            }
+
+            double x = (double)pos.getX() + 0.5;
+            double y = (double)pos.getY() + 0.3;
+            double z = (double)pos.getZ() + 0.5;
+            entity.refreshPositionAndAngles(x, y, z, entity.getYaw(), entity.getPitch());
+        }
+        world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, world.getBlockState(pos)));
+        return world.spawnEntity(entity);
+    }
+
 
     // region +------------------------+ NBT +------------------------+
 
@@ -86,7 +119,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
             FireflyData.LIST_CODEC
                     .parse(NbtOps.INSTANCE, nbt.get(FIREFLIES_KEY))
                     .resultOrPartial(string -> Mod.LOGGER.error("Failed to parse fireflies: '{}'", string))
-                    .ifPresent(list -> list.forEach(this::addFirefly));
+                    .ifPresent(list -> list.forEach(fireflyData -> this.fireflies.add(new FireflyData.Firefly(fireflyData))));
         }
     }
 
@@ -111,7 +144,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
     // region +------------------------+ Components +------------------------+
 
     @Override
-    protected void readComponents(BlockEntity.ComponentsAccess components) {
+    protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
         this.fireflies.clear();
         List<FireflyData> list = components.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, List.of());
@@ -155,6 +188,11 @@ public class FireflyLanternBlockEntity extends BlockEntity {
                 MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.2F),
                 MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.2F)
         );
+
+        if (averageColors == null) {
+            updateAverageColors();
+        }
+
         int color = ColorHelper.fromFloats(1.0F,
                 Math.clamp(averageColors.x * randomOffset.x, 0.0F, 1.0F),
                 Math.clamp(averageColors.y * randomOffset.y, 0.0F, 1.0F),

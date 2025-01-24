@@ -4,26 +4,42 @@ import com.mojang.serialization.MapCodec;
 import io.github.diiiaz.fireflies.block.ModProperties;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.block.entity.custom.FireflyLanternBlockEntity;
-import io.github.diiiaz.fireflies.entity.ModEntities;
+import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.item.ModItems;
 import io.github.diiiaz.fireflies.item.custom.CatchingNet;
+import io.github.diiiaz.fireflies.utils.ModTags;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -33,12 +49,15 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class FireflyLantern extends BlockWithEntity implements Waterloggable {
@@ -208,30 +227,82 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
         return (getFirefliesAmount(state) - 1) >= (ModProperties.FIREFLIES_LANTERN_AMOUNT_MIN);
     }
 
-    private void spawnFireflies(ServerWorld world, int amount, BlockPos pos) {
-        for (int i = 0; i < amount; i++) {
-            world.spawnEntity(ModEntities.FIREFLY.spawn(world, pos, SpawnReason.TRIGGERED));
-        }
-    }
-
     // endregion
 
     // region +------------------------+ Block Break +------------------------+
 
     @Override
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        super.afterBreak(world, player, pos, state, blockEntity, tool);
-        if (player.isCreative()) { return; }
-        spawnFireflies((ServerWorld) world, getFirefliesAmount(state), pos);
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (world instanceof ServerWorld serverWorld
+                && player.isCreative()
+                && serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
+                && world.getBlockEntity(pos) instanceof FireflyLanternBlockEntity fireflyLanternBlockEntity) {
+            int i = state.get(FIREFLIES_AMOUNT);
+            if (fireflyLanternBlockEntity.hasFireflies() || i > 0) {
+                ItemStack itemStack = new ItemStack(this);
+                itemStack.applyComponentsFrom(fireflyLanternBlockEntity.createComponentMap());
+                itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, i));
+                ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+                itemEntity.setToDefaultPickupDelay();
+                world.spawnEntity(itemEntity);
+            }
+        }
+
+        return super.onBreak(world, pos, state, player);
     }
 
     @Override
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        super.afterBreak(world, player, pos, state, blockEntity, tool);
+        if (!world.isClient && blockEntity instanceof FireflyLanternBlockEntity fireflyLanternBlockEntity) {
+            if (!EnchantmentHelper.hasAnyEnchantmentsIn(tool, ModTags.Enchantments.PREVENTS_FIREFLY_SPAWNS_WHEN_MINING)) {
+                fireflyLanternBlockEntity.tryReleaseFireflies(state);
+            }
+            world.updateComparators(pos, this);
+        }
+    }
+
+    @Override
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
+        Entity entity = builder.getOptional(LootContextParameters.THIS_ENTITY);
+        if (entity instanceof TntEntity
+                || entity instanceof CreeperEntity
+                || entity instanceof WitherSkullEntity
+                || entity instanceof WitherEntity
+                || entity instanceof TntMinecartEntity) {
+            builder.getOptional(LootContextParameters.BLOCK_ENTITY);
+        }
+
+        return super.getDroppedStacks(state, builder);
+    }
+
+
+    @Override
     protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-        spawnFireflies(world, getFirefliesAmount(state), pos);
+        ((FireflyLanternBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).tryReleaseFireflies(state);
         super.onExploded(state, world, pos, explosion, stackMerger);
     }
 
     // endregion
+
+
+    @Override
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        ItemStack itemStack = super.getPickStack(world, pos, state, includeData);
+        if (includeData) {
+            itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, state.get(FIREFLIES_AMOUNT)));
+        }
+
+        return itemStack;
+    }
+
+
+    @Override
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
+        super.appendTooltip(stack, context, tooltip, options);
+        int firefliesAmount = stack.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, List.of()).size();
+        tooltip.add(Text.translatable("container.fireflies", firefliesAmount, ModProperties.FIREFLIES_LANTERN_AMOUNT_MAX).formatted(Formatting.GRAY));
+    }
 
 
 }

@@ -12,8 +12,8 @@ import net.minecraft.registry.Registry;
 public class ModBlockEntityTypes {
 
 
-    public static final BlockEntityType<LuminescentSoilBlockEntity> LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE = register("luminescent_soil", FabricBlockEntityTypeBuilder.create(LuminescentSoilBlockEntity::new, ModBlocks.LUMINESCENT_SOIL).build());
     public static final BlockEntityType<FireflyLanternBlockEntity> FIREFLY_LANTERN_BLOCK_ENTITY_TYPE = register("firefly_lantern", FabricBlockEntityTypeBuilder.create(FireflyLanternBlockEntity::new, ModBlocks.FIREFLY_LANTERN).build());
+    public static final BlockEntityType<LuminescentSoilBlockEntity> LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE = register("luminescent_soil", FabricBlockEntityTypeBuilder.create(LuminescentSoilBlockEntity::new, ModBlocks.LUMINESCENT_SOIL).build());
 
 
     public static <T extends BlockEntityType<?>> T register(String path, T blockEntityType) {
