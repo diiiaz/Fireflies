@@ -7,6 +7,7 @@
   "container.fireflies": "Fireflies: %s / %s",
 
   "item.fireflies.catching_net": "Catching Net",
+  "item.fireflies.firefly_spawn_egg": "Firefly Spawn Egg",
 
   "sounds.fireflies.firefly_bottle_used": "Bottle used",
   "sounds.fireflies.firefly_ambient": "Firefly buzz",

@@ -1,5 +1,6 @@
 package io.github.diiiaz.fireflies.datagen;
 
+import io.github.diiiaz.fireflies.block.ModBlocks;
 import io.github.diiiaz.fireflies.item.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -32,6 +33,14 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .input('S', Items.STRING)
                         .input('T', Items.STICK)
                         .criterion("has_string", this.conditionsFromItem(Items.STRING))
+                        .offerTo(exporter);
+                createShaped(RecipeCategory.DECORATIONS, ModBlocks.FIREFLY_LANTERN, 1)
+                        .pattern(" S ")
+                        .pattern("G G")
+                        .pattern(" G ")
+                        .input('S', Items.STRING)
+                        .input('G', Items.GLASS)
+                        .criterion("has_glass", this.conditionsFromItem(Items.GLASS))
                         .offerTo(exporter);
             }
         };
