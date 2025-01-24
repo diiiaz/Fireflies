@@ -58,6 +58,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     private static final float MAX_SPEED = 0.5F;
     private static final int TOO_FAR_DISTANCE = 48;
     private static final int MAX_WANDER_DISTANCE = 8;
+    private static final int MAX_TIME_IN_DAY_WITHOUT_HOME = 500;
     private static final String HOME_POS_KEY = "HomePos";
     private static final String VARIANT_KEY = "Variant";
     private static final String LIGHT_FREQUENCY_OFFSET_KEY = "LightFrequencyOffset";
@@ -69,6 +70,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     private int cannotEnterHomeTicks;
     private int ticksLeftToFindHome;
     private int ticksInsideWater;
+    private int ticksInDayWithoutHome;
     private MoveToHomeGoal moveToHomeGoal;
 
 
@@ -198,7 +200,6 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         this.ticksLeftToFindHome = 200;
     }
 
-
     boolean canEnterHome() {
         if (this.cannotEnterHomeTicks <= 0 && this.getTarget() == null) {
             return !isNight(this.getWorld()) && !this.isHomeNearFire();
@@ -247,6 +248,22 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
 
     @Override
     protected void mobTick(ServerWorld world) {
+        tickInWater(world);
+        tickInDayWithoutHome(world);
+    }
+
+    private void tickInDayWithoutHome(ServerWorld world) {
+        if (!isNight(world) && !hasHomePos() && !isPersistent() && !cannotDespawn()) {
+            this.ticksInDayWithoutHome++;
+            if (this.ticksInDayWithoutHome > MAX_TIME_IN_DAY_WITHOUT_HOME) {
+                this.remove(RemovalReason.DISCARDED);
+            }
+        } else if (this.ticksInDayWithoutHome > 0) {
+            this.ticksInDayWithoutHome = 0;
+        }
+    }
+
+    private void tickInWater(ServerWorld world) {
         if (this.isInsideWaterOrBubbleColumn()) {
             this.ticksInsideWater++;
         } else {
@@ -257,6 +274,7 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
             this.damage(world, this.getDamageSources().drown(), 1.0F);
         }
     }
+
 
     // endregion
 
