@@ -21,6 +21,7 @@ public class ModEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
     @Override
     protected void configure(RegistryWrapper.WrapperLookup registries) {
         this.getOrCreateTagBuilder(ModTags.EntityTypes.LUMINESCENT_SOIL_INHABITORS).add(ModEntities.FIREFLY);
+        this.getOrCreateTagBuilder(ModTags.EntityTypes.NET_CATCHABLE).add(ModEntities.FIREFLY);
         this.getOrCreateTagBuilder(EntityTypeTags.FROG_FOOD).add(ModEntities.FIREFLY);
     }
 }

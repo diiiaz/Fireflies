@@ -36,7 +36,7 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                                 .with(
                                         ItemEntry.builder(drop)
                                                 .conditionally(this.createSilkTouchCondition())
-                                                .apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(ModDataComponentTypes.LUMINESCENT_SOIL_FIREFLIES_AMOUNT))
+                                                .apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(ModDataComponentTypes.FIREFLIES_AMOUNT))
                                                 .alternatively(ItemEntry.builder(drop))
                                 )
                 );

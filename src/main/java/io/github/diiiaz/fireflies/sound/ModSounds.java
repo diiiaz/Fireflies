@@ -9,7 +9,8 @@ import net.minecraft.util.Identifier;
 public class ModSounds {
 
 
-    public static final SoundEvent BOTTLE_USED = registerSoundEvent("bottle_used");
+    public static final SoundEvent CATCHING_NET_USED = registerSoundEvent("catching_net_used");
+//    public static final SoundEvent BOTTLE_USED = registerSoundEvent("bottle_used");
     public static final SoundEvent FIREFLY_AMBIENT = registerSoundEvent("firefly_ambient");
 
 

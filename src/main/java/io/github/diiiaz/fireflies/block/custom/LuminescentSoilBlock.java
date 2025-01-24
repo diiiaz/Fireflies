@@ -43,7 +43,7 @@ import java.util.List;
 public class LuminescentSoilBlock extends BlockWithEntity {
     
     public static final MapCodec<LuminescentSoilBlock> CODEC = createCodec(LuminescentSoilBlock::new);
-    public static final IntProperty FIREFLIES_AMOUNT = ModProperties.LUMINESCENT_SOIL_AMOUNT;
+    public static final IntProperty FIREFLIES_AMOUNT = ModProperties.LUMINESCENT_SOIL_FIREFLIES_AMOUNT;
 
     @Override
     public MapCodec<LuminescentSoilBlock> getCodec() {
@@ -165,7 +165,7 @@ public class LuminescentSoilBlock extends BlockWithEntity {
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         super.appendTooltip(stack, context, tooltip, options);
-        int firefliesAmount = stack.getOrDefault(ModDataComponentTypes.LUMINESCENT_SOIL_FIREFLIES_AMOUNT, List.of()).size();
+        int firefliesAmount = stack.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, List.of()).size();
         tooltip.add(Text.translatable("container.luminescent_soil.fireflies", firefliesAmount, ModProperties.LUMINESCENT_SOIL_AMOUNT_MAX).formatted(Formatting.GRAY));
     }
 

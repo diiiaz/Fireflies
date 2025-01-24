@@ -15,7 +15,7 @@ public class ModProperties {
      */
     public static final int LUMINESCENT_SOIL_AMOUNT_MIN = 0;
     public static final int LUMINESCENT_SOIL_AMOUNT_MAX = 16;
-    public static final IntProperty LUMINESCENT_SOIL_AMOUNT = IntProperty.of("fireflies_amount", LUMINESCENT_SOIL_AMOUNT_MIN, LUMINESCENT_SOIL_AMOUNT_MAX);
+    public static final IntProperty LUMINESCENT_SOIL_FIREFLIES_AMOUNT = IntProperty.of("fireflies_amount", LUMINESCENT_SOIL_AMOUNT_MIN, LUMINESCENT_SOIL_AMOUNT_MAX);
 
 
     public static void initialize() {}

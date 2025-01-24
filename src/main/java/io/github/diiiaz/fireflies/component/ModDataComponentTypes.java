@@ -1,8 +1,8 @@
 package io.github.diiiaz.fireflies.component;
 
-import com.mojang.serialization.Codec;
 import io.github.diiiaz.fireflies.Mod;
-import io.github.diiiaz.fireflies.block.entity.custom.LuminescentSoilBlockEntity;
+import io.github.diiiaz.fireflies.block.entity.custom.FireflyData;
+import io.github.diiiaz.fireflies.item.custom.CatchingNet;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
@@ -14,10 +14,18 @@ import java.util.function.UnaryOperator;
 public class ModDataComponentTypes {
 
 
-    public static final ComponentType<Integer> BOTTLE_FIREFLIES_AMOUNT = register("firefly_bottle_fireflies_amount", integerBuilder -> integerBuilder.codec(Codec.INT));
-    public static final ComponentType<List<LuminescentSoilBlockEntity.FireflyData>> LUMINESCENT_SOIL_FIREFLIES_AMOUNT = register(
-            "luminescent_soil_fireflies_amount",
-            builder -> builder.codec(LuminescentSoilBlockEntity.FireflyData.LIST_CODEC).packetCodec(LuminescentSoilBlockEntity.FireflyData.PACKET_CODEC.collect(PacketCodecs.toList())).cache()
+    public static final ComponentType<List<FireflyData>> FIREFLIES_AMOUNT = register(
+            "fireflies_amount", builder -> builder
+                    .codec(FireflyData.LIST_CODEC)
+                    .packetCodec(FireflyData.PACKET_CODEC.collect(PacketCodecs.toList()))
+                    .cache()
+    );
+
+    public static final ComponentType<List<CatchingNet.CaughtEntityData>> CAUGHT_ENTITIES = register(
+            "caught_entities", builder -> builder
+                    .codec(CatchingNet.CaughtEntityData.LIST_CODEC)
+                    .packetCodec(CatchingNet.CaughtEntityData.PACKET_CODEC.collect(PacketCodecs.toList()))
+                    .cache()
     );
 
 

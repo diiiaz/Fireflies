@@ -36,10 +36,5 @@
 	},
 	"suggests": {
 		"another-mod": "*"
-	},
-	"custom": {
-		"loom:injected_interfaces": {
-			"net/minecraft/class_1754": ["io/github/diiiaz/fireflies/item/custom/GlassBottleItemCustomInterface"]
-		}
 	}
 }

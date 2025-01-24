@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import io.github.diiiaz.fireflies.block.ModBlocks;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.block.entity.custom.LuminescentSoilBlockEntity;
-import io.github.diiiaz.fireflies.item.ModItems;
-import io.github.diiiaz.fireflies.item.custom.FireflyBottle;
 import io.github.diiiaz.fireflies.point_of_interest.ModPointOfInterestTypes;
 import io.github.diiiaz.fireflies.sound.ModSounds;
 import net.minecraft.block.BlockState;
@@ -29,11 +27,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
@@ -41,8 +35,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
@@ -376,25 +368,6 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
                 .add(EntityAttributes.MAX_HEALTH, 2.0)
                 .add(EntityAttributes.FLYING_SPEED, 0.6F)
                 .add(EntityAttributes.MOVEMENT_SPEED, 0.3F);
-    }
-
-    // endregion
-
-    // region +--------------------------+ Interactions +--------------------------+
-
-    @Override
-    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (!itemStack.isOf(Items.GLASS_BOTTLE)) { return super.interactMob(player, hand); }
-        if (player.getEntityWorld().isClient()) { return super.interactMob(player, hand); }
-
-        ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
-        FireflyBottle.spawnBottleParticles(serverWorld, this.getX(), this.getY(), this.getZ());
-        FireflyBottle.playBottleSound(serverWorld, player, itemStack);
-        ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, ModItems.FIREFLY_BOTTLE.getDefaultStack());
-        player.setStackInHand(hand, itemStack2);
-        this.remove(RemovalReason.DISCARDED);
-        return ActionResult.SUCCESS_SERVER;
     }
 
     // endregion

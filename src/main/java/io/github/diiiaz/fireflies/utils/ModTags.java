@@ -14,7 +14,7 @@ public class ModTags {
 
 
         public static final TagKey<EntityType<?>> LUMINESCENT_SOIL_INHABITORS = createTag("luminescent_soil_inhabitors");
-
+        public static final TagKey<EntityType<?>> NET_CATCHABLE = createTag("net_catchable");
 
         private static TagKey<EntityType<?>> createTag(@SuppressWarnings("SameParameterValue") String name) {
             return TagKey.of(RegistryKeys.ENTITY_TYPE, Mod.createIdentifier(name));
@@ -33,6 +33,7 @@ public class ModTags {
         }
 
     }
+
 
     public static class PointOfInterestTypes {
 

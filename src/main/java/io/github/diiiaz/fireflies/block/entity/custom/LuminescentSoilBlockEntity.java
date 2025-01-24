@@ -1,8 +1,6 @@
 package io.github.diiiaz.fireflies.block.entity.custom;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.diiiaz.fireflies.Mod;
 import io.github.diiiaz.fireflies.block.ModProperties;
 import io.github.diiiaz.fireflies.block.custom.LuminescentSoilBlock;
@@ -10,20 +8,13 @@ import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.sound.ModSounds;
-import io.github.diiiaz.fireflies.utils.ModTags;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -34,46 +25,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-public class LuminescentSoilBlockEntity extends BlockEntity{
+public class LuminescentSoilBlockEntity extends BlockEntity {
 
     private static final String FIREFLIES_KEY = "fireflies";
     private static final int MIN_TIME_BEFORE_RELEASING_FIREFLY = 20;
     private int timeSinceReleasingFirefly = 0;
-    private final List<Firefly> fireflies = Lists.newArrayList();
-    static final List<String> IRRELEVANT_NBT_KEYS = Arrays.asList(
-            "Air",
-            "ArmorDropChances",
-            "ArmorItems",
-            "Brain",
-            "CanPickUpLoot",
-            "DeathTime",
-            "FallDistance",
-            "FallFlying",
-            "Fire",
-            "HandDropChances",
-            "HandItems",
-            "HurtByTimestamp",
-            "HurtTime",
-            "LeftHanded",
-            "Motion",
-            "NoGravity",
-            "OnGround",
-            "PortalCooldown",
-            "Pos",
-            "Rotation",
-            "SleepingX",
-            "SleepingY",
-            "SleepingZ",
-            "CannotEnterLuminescentSoilTicks",
-            "Passengers",
-            "leash",
-            "UUID"
-    );
+    private final List<FireflyData.Firefly> fireflies = Lists.newArrayList();
 
 
     public LuminescentSoilBlockEntity(BlockPos pos, BlockState state) {
@@ -129,13 +90,13 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
                 this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(entity, this.getCachedState()));
             }
 
-            entity.discard();
+            entity.remove(Entity.RemovalReason.DISCARDED);
             super.markDirty();
         }
     }
 
     public void addFirefly(FireflyData firefly) {
-        this.fireflies.add(new Firefly(firefly));
+        this.fireflies.add(new FireflyData.Firefly(firefly));
     }
 
 
@@ -187,12 +148,12 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
         return world.spawnEntity(entity);
     }
 
-    private static void tickFireflies(World world, BlockPos pos, BlockState state, List<Firefly> fireflies) {
+    private static void tickFireflies(World world, BlockPos pos, BlockState state, List<FireflyData.Firefly> fireflies) {
         boolean bl = false;
-        Iterator<Firefly> iterator = fireflies.iterator();
+        Iterator<FireflyData.Firefly> iterator = fireflies.iterator();
 
         while (iterator.hasNext()) {
-            Firefly firefly = iterator.next();
+            FireflyData.Firefly firefly = iterator.next();
             if (firefly.canExitHome()) {
                 if (releaseFirefly(world, pos, state, firefly.createData(), null, false)) {
                     bl = true;
@@ -225,7 +186,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
         super.readNbt(nbt, registries);
         this.fireflies.clear();
         if (nbt.contains(FIREFLIES_KEY)) {
-            LuminescentSoilBlockEntity.FireflyData.LIST_CODEC
+            FireflyData.LIST_CODEC
                     .parse(NbtOps.INSTANCE, nbt.get(FIREFLIES_KEY))
                     .resultOrPartial(string -> Mod.LOGGER.error("Failed to parse fireflies: '{}'", string))
                     .ifPresent(list -> list.forEach(this::addFirefly));
@@ -235,14 +196,14 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
-        nbt.put(FIREFLIES_KEY, LuminescentSoilBlockEntity.FireflyData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createFirefliesData()).getOrThrow());
+        nbt.put(FIREFLIES_KEY, FireflyData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createFirefliesData()).getOrThrow());
     }
 
     @Override
     protected void readComponents(BlockEntity.ComponentsAccess components) {
         super.readComponents(components);
         this.fireflies.clear();
-        List<LuminescentSoilBlockEntity.FireflyData> list = components.getOrDefault(ModDataComponentTypes.LUMINESCENT_SOIL_FIREFLIES_AMOUNT, List.of());
+        List<FireflyData> list = components.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, List.of());
         list.forEach(this::addFirefly);
         if (this.world != null && !this.world.isClient()) {
             world.setBlockState(pos, this.world.getBlockState(pos).with(LuminescentSoilBlock.FIREFLIES_AMOUNT, ((LuminescentSoilBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).getFirefliesCount()));
@@ -252,7 +213,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
     @Override
     protected void addComponents(ComponentMap.Builder builder) {
         super.addComponents(builder);
-        builder.add(ModDataComponentTypes.LUMINESCENT_SOIL_FIREFLIES_AMOUNT, this.createFirefliesData());
+        builder.add(ModDataComponentTypes.FIREFLIES_AMOUNT, this.createFirefliesData());
     }
 
     @SuppressWarnings("deprecation")
@@ -262,72 +223,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity{
         nbt.remove(FIREFLIES_KEY);
     }
 
-    private List<LuminescentSoilBlockEntity.FireflyData> createFirefliesData() {
-        return this.fireflies.stream().map(LuminescentSoilBlockEntity.Firefly::createData).toList();
-    }
-
-    static class Firefly {
-        private final LuminescentSoilBlockEntity.FireflyData data;
-        private int ticksInHome;
-
-        Firefly(LuminescentSoilBlockEntity.FireflyData data) {
-            this.data = data;
-            this.ticksInHome = data.ticksInHome();
-        }
-
-        public boolean canExitHome() {
-            return this.ticksInHome++ > this.data.minTicksInHome;
-        }
-
-        public LuminescentSoilBlockEntity.FireflyData createData() {
-            return new LuminescentSoilBlockEntity.FireflyData(this.data.entityData, this.ticksInHome, this.data.minTicksInHome);
-        }
-    }
-
-    public record FireflyData(NbtComponent entityData, int ticksInHome, int minTicksInHome) {
-        public static final Codec<LuminescentSoilBlockEntity.FireflyData> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(
-                                NbtComponent.CODEC.optionalFieldOf("entity_data", NbtComponent.DEFAULT).forGetter(LuminescentSoilBlockEntity.FireflyData::entityData),
-                                Codec.INT.fieldOf("ticks_in_home").forGetter(LuminescentSoilBlockEntity.FireflyData::ticksInHome),
-                                Codec.INT.fieldOf("min_ticks_home").forGetter(LuminescentSoilBlockEntity.FireflyData::minTicksInHome)
-                        )
-                        .apply(instance, LuminescentSoilBlockEntity.FireflyData::new)
-        );
-        public static final Codec<List<LuminescentSoilBlockEntity.FireflyData>> LIST_CODEC = CODEC.listOf();
-        @SuppressWarnings("deprecation")
-        public static final PacketCodec<ByteBuf, LuminescentSoilBlockEntity.FireflyData> PACKET_CODEC = PacketCodec.tuple(
-                NbtComponent.PACKET_CODEC,
-                LuminescentSoilBlockEntity.FireflyData::entityData,
-                PacketCodecs.VAR_INT,
-                LuminescentSoilBlockEntity.FireflyData::ticksInHome,
-                PacketCodecs.VAR_INT,
-                LuminescentSoilBlockEntity.FireflyData::minTicksInHome,
-                LuminescentSoilBlockEntity.FireflyData::new
-        );
-
-        public static LuminescentSoilBlockEntity.FireflyData of(Entity entity) {
-            NbtCompound nbtCompound = new NbtCompound();
-            entity.saveNbt(nbtCompound);
-            LuminescentSoilBlockEntity.IRRELEVANT_NBT_KEYS.forEach(nbtCompound::remove);
-//            boolean bl = nbtCompound.getBoolean("HasNectar");
-            return new LuminescentSoilBlockEntity.FireflyData(NbtComponent.of(nbtCompound), 0, 200);
-        }
-
-        @Nullable
-        public Entity loadEntity(World world, BlockPos pos) {
-            NbtCompound nbtCompound = this.entityData.copyNbt();
-            LuminescentSoilBlockEntity.IRRELEVANT_NBT_KEYS.forEach(nbtCompound::remove);
-            Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.LOAD, entityx -> entityx);
-            if (entity != null && entity.getType().isIn(ModTags.EntityTypes.LUMINESCENT_SOIL_INHABITORS)) {
-                entity.setNoGravity(true);
-                if (entity instanceof FireflyEntity fireflyEntity) {
-                    fireflyEntity.setHomePos(pos);
-                }
-                return entity;
-            } else {
-                return null;
-            }
-        }
-
+    private List<FireflyData> createFirefliesData() {
+        return this.fireflies.stream().map(FireflyData.Firefly::createData).toList();
     }
 }

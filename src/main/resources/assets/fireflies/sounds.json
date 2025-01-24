@@ -13,5 +13,16 @@
         "fireflies:mob/firefly/idle3",
         "fireflies:mob/firefly/idle4"
     ]
+  },
+  "catching_net_used": {
+    "subtitle": "sounds.fireflies.catching_net_used",
+    "sounds": [
+        "fireflies:item/catching_net/catch1",
+        "fireflies:item/catching_net/catch2",
+        "fireflies:item/catching_net/catch3",
+        "fireflies:item/catching_net/catch4",
+        "fireflies:item/catching_net/catch5",
+        "fireflies:item/catching_net/catch6"
+    ]
   }
 }
