@@ -30,7 +30,7 @@
                 {
                   "function": "minecraft:copy_components",
                   "include": [
-                    "fireflies:luminescent_soil_fireflies_amount"
+                    "fireflies:fireflies_amount"
                   ],
                   "source": "block_entity"
                 }
