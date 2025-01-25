@@ -10,8 +10,9 @@ public class ModSounds {
 
 
     public static final SoundEvent CATCHING_NET_USED = registerSoundEvent("catching_net_used");
-//    public static final SoundEvent BOTTLE_USED = registerSoundEvent("bottle_used");
     public static final SoundEvent FIREFLY_AMBIENT = registerSoundEvent("firefly_ambient");
+    public static final SoundEvent BLOCK_LUMINESCENT_SOIL_ENTER = registerSoundEvent("block_luminescent_soil_enter");
+    public static final SoundEvent BLOCK_LUMINESCENT_SOIL_EXIT = registerSoundEvent("block_luminescent_soil_exit");
 
 
     private static SoundEvent registerSoundEvent(String name) {

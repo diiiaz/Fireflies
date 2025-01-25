@@ -17,7 +17,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -86,7 +85,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity {
             if (this.world != null) {
                 BlockPos blockPos = this.getPos();
                 this.world.setBlockState(pos, this.world.getBlockState(blockPos).with(LuminescentSoilBlock.FIREFLIES_AMOUNT, getFirefliesCount()));
-                this.world.playSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.BLOCK_BEEHIVE_ENTER, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.world.playSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), ModSounds.BLOCK_LUMINESCENT_SOIL_ENTER, SoundCategory.BLOCKS, 1.0F, MathHelper.map(this.world.random.nextFloat(), 0.0F, 1.0F, 0.7F, 0.9F));
                 this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(entity, this.getCachedState()));
             }
 
@@ -139,7 +138,7 @@ public class LuminescentSoilBlockEntity extends BlockEntity {
             double z = (double)pos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
             entity.refreshPositionAndAngles(x, y, z, entity.getYaw(), entity.getPitch());
         }
-        world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos, ModSounds.BLOCK_LUMINESCENT_SOIL_EXIT, SoundCategory.BLOCKS, 1.0F, MathHelper.map(world.getRandom().nextFloat(), 0.0F, 1.0F, 1.1F, 1.2F));
         world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, world.getBlockState(pos)));
         if (world.getBlockEntity(pos) != null) {
             //noinspection DataFlowIssue

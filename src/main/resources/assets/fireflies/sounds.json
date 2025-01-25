@@ -1,10 +1,4 @@
 {
-  "bottle_used": {
-    "subtitle": "sounds.fireflies.firefly_bottle_used",
-    "sounds": [
-      "fireflies:firefly_bottle_used"
-    ]
-  },
   "firefly_ambient": {
     "subtitle": "sounds.fireflies.firefly_ambient",
     "sounds": [
@@ -23,6 +17,18 @@
         "fireflies:item/catching_net/catch4",
         "fireflies:item/catching_net/catch5",
         "fireflies:item/catching_net/catch6"
+    ]
+  },
+  "block_luminescent_soil_enter": {
+    "subtitle": "sounds.fireflies.block_luminescent_soil_enter",
+    "sounds": [
+        "fireflies:block/luminescent_soil/passage"
+    ]
+  },
+  "block_luminescent_soil_exit": {
+    "subtitle": "sounds.fireflies.block_luminescent_soil_exit",
+    "sounds": [
+        "fireflies:block/luminescent_soil/passage"
     ]
   }
 }
