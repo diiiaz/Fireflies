@@ -3,6 +3,7 @@ package io.github.diiiaz.fireflies.block.entity.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.diiiaz.fireflies.entity.ModEntities;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
 import io.github.diiiaz.fireflies.utils.ModTags;
 import io.netty.buffer.ByteBuf;
@@ -13,6 +14,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +50,15 @@ public record FireflyData(NbtComponent entityData, int ticksInHome, int minTicks
         IRRELEVANT_NBT_KEYS.forEach(nbtCompound::remove);
         return new FireflyData(NbtComponent.of(nbtCompound), 0, 200);
     }
+
+    public static FireflyData create(int ticksInHome, int variant, float lightFrequency) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString("id", Registries.ENTITY_TYPE.getId(ModEntities.FIREFLY).toString());
+        nbtCompound.putInt(FireflyEntity.VARIANT_KEY, variant);
+        nbtCompound.putFloat(FireflyEntity.LIGHT_FREQUENCY_OFFSET_KEY, lightFrequency);
+        return new FireflyData(NbtComponent.of(nbtCompound), ticksInHome, 200);
+    }
+
 
     public int getVariant() {
         DataResult<Integer> dataResult = entityData().get(Codec.INT.fieldOf("Variant"));

@@ -11,6 +11,8 @@ import io.github.diiiaz.fireflies.particle.ModParticleTypes;
 import io.github.diiiaz.fireflies.point_of_interest.ModPointOfInterestTypes;
 import io.github.diiiaz.fireflies.sound.ModSounds;
 import io.github.diiiaz.fireflies.utils.ModTags;
+import io.github.diiiaz.fireflies.world.gen.ModWorldGeneration;
+import io.github.diiiaz.fireflies.world.gen.feature.ModFeatures;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -24,6 +26,8 @@ public class Mod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+
+		ModFeatures.initialize();
 
 		ModTags.initialize();
 		ModPointOfInterestTypes.initialize();
@@ -39,6 +43,8 @@ public class Mod implements ModInitializer {
 		ModBlockEntityTypes.initialize();
 		ModBlocks.initialize();
 		ModSounds.initialize();
+
+		ModWorldGeneration.generateModWorldGen();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.FIREFLY, FireflyEntity.createAttributes());
 

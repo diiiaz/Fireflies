@@ -26,8 +26,10 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
@@ -53,15 +55,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FireflyEntity extends PathAwareEntity implements Flutterer {
+public class FireflyEntity extends AnimalEntity implements Flutterer {
+
+    public static final String VARIANT_KEY = "Variant";
+    public static final String LIGHT_FREQUENCY_OFFSET_KEY = "LightFrequencyOffset";
 
     private static final float MAX_SPEED = 0.5F;
     private static final int TOO_FAR_DISTANCE = 48;
     private static final int MAX_WANDER_DISTANCE = 8;
     private static final int MAX_TIME_IN_DAY_WITHOUT_HOME = 500;
     private static final String HOME_POS_KEY = "HomePos";
-    private static final String VARIANT_KEY = "Variant";
-    private static final String LIGHT_FREQUENCY_OFFSET_KEY = "LightFrequencyOffset";
 
     private static final TrackedData<Integer> DATA_ID_TYPE_VARIANT = DataTracker.registerData(FireflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> LIGHT_FREQUENCY_OFFSET = DataTracker.registerData(FireflyEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -103,8 +106,13 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
         this.dataTracker.set(LIGHT_FREQUENCY_OFFSET, this.random.nextFloat());
-        this.setVariant(getRandomVariant(random).orElse(0));
+        this.setVariant(getRandomVariant(random));
         return super.initialize(world, difficulty, spawnReason, entityData);
+    }
+
+    @Override
+    public @Nullable PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return null;
     }
 
     @Override
@@ -149,6 +157,11 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         return this.dataTracker.get(LIGHT_FREQUENCY_OFFSET);
     }
 
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false;
+    }
+
 
     // region +--------------------------+ Variants +--------------------------+
 
@@ -169,10 +182,10 @@ public class FireflyEntity extends PathAwareEntity implements Flutterer {
         this.dataTracker.set(DATA_ID_TYPE_VARIANT, variant);
     }
 
-    private Optional<Integer> getRandomVariant(Random random) {
+    public static int getRandomVariant(Random random) {
         DataPool.Builder<Integer> pool = DataPool.builder();
         Arrays.stream(FireflyVariant.values()).forEach(variant -> pool.add(variant.getId(), variant.getWeight()));
-        return pool.build().getDataOrEmpty(random);
+        return pool.build().getDataOrEmpty(random).orElse(0);
     }
 
 

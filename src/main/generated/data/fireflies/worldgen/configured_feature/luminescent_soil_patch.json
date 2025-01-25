@@ -1,0 +1,24 @@
+{
+  "type": "fireflies:luminescent_soil_feature",
+  "config": {
+    "state_provider": {
+      "fallback": {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "fireflies:luminescent_soil",
+          "Properties": {
+            "fireflies": "0"
+          }
+        }
+      },
+      "rules": []
+    },
+    "target": {
+      "type": "minecraft:matching_blocks",
+      "blocks": [
+        "minecraft:dirt",
+        "minecraft:grass_block"
+      ]
+    }
+  }
+}

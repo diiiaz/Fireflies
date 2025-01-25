@@ -6,8 +6,8 @@ import java.util.Comparator;
 public enum FireflyVariant {
 
     DEFAULT(0, -1769666, 4096, "yellow"),
-    ORANGE(1, -16342, 2048, "orange"),
-    PALE_RED(2, -33411, 512, "pale_red"),
+    ORANGE(1, -16342, 128, "orange"),
+    PALE_RED(2, -33411, 16, "pale_red"),
     BLUE_GHOST(3, -14267652, 1, "blue_ghost");
 
 
