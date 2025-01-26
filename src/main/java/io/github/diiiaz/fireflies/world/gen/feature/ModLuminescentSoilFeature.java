@@ -1,6 +1,7 @@
 package io.github.diiiaz.fireflies.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import io.github.diiiaz.fireflies.block.custom.LuminescentSoilBlock;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.block.entity.custom.FireflyData;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
@@ -37,14 +38,20 @@ public class ModLuminescentSoilFeature extends Feature<ModLuminescentSoilFeature
         for (int i = topY; i > bottomY; i--) {
             pos.setY(i);
             if (config.target().test(world, pos)) {
+                // set the block
                 BlockState blockState = config.stateProvider().getBlockState(world, random, pos);
                 world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+                // edit block entity
                 world.getBlockEntity(pos, ModBlockEntityTypes.LUMINESCENT_SOIL_BLOCK_ENTITY_TYPE).ifPresent(blockEntity -> {
                     int amountOfFireflyToSpawn = 6 + random.nextInt(10);
                     for (int j = 0; j < amountOfFireflyToSpawn; j++) {
                         blockEntity.addFirefly(FireflyData.create(random.nextInt(199), FireflyEntity.getRandomVariant(random), random.nextFloat()));
                     }
+                    // update block state
+                    BlockState blockState2 = config.stateProvider().getBlockState(world, random, pos).with(LuminescentSoilBlock.FIREFLIES_AMOUNT, amountOfFireflyToSpawn);
+                    world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS);
                 });
+                // set short grass block
                 world.setBlockState(pos.offset(Direction.UP, 1), Blocks.SHORT_GRASS.getDefaultState(), Block.NOTIFY_LISTENERS);
                 if (!bl2) {
                     this.markBlocksAboveForPostProcessing(world, pos);
