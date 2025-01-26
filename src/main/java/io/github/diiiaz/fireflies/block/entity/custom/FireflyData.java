@@ -70,7 +70,7 @@ public record FireflyData(NbtComponent entityData, int ticksInHome, int minTicks
     public Entity loadEntity(World world, BlockPos pos) {
         NbtCompound nbtCompound = this.entityData.copyNbt();
         IRRELEVANT_NBT_KEYS.forEach(nbtCompound::remove);
-        Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.LOAD, _entity -> _entity);
+        Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, _entity -> _entity);
         if (entity != null && entity.getType().isIn(ModTags.EntityTypes.LUMINESCENT_SOIL_INHABITORS)) {
             entity.setNoGravity(true);
             if (entity instanceof FireflyEntity fireflyEntity) {

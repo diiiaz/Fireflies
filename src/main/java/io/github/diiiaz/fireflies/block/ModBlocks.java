@@ -21,7 +21,6 @@ public class ModBlocks {
 
     public static final Block FIREFLY_LANTERN = registerBlock("firefly_lantern",
             new FireflyLantern(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("firefly_lantern")))
                     .mapColor(MapColor.IRON_GRAY)
                     .solid()
                     .strength(3.5F)
@@ -33,7 +32,6 @@ public class ModBlocks {
 
     public static final Block LUMINESCENT_SOIL = registerBlock("luminescent_soil",
             new LuminescentSoilBlock(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("luminescent_soil")))
                     .mapColor(MapColor.DIRT_BROWN)
                     .strength(0.5F)
                     .sounds(BlockSoundGroup.ROOTED_DIRT)
@@ -52,8 +50,7 @@ public class ModBlocks {
 
     private static void registerBlockItem(String name, Block block) {
         Registry.register(Registries.ITEM,Mod.createIdentifier(name),
-                new BlockItem(block, new Item.Settings().useBlockPrefixedTranslationKey()
-                        .registryKey(RegistryKey.of(RegistryKeys.ITEM,Mod.createIdentifier(name)))));
+                new BlockItem(block, new Item.Settings()));
     }
 
 

@@ -30,30 +30,22 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
+import net.minecraft.world.*;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.tick.ScheduledTickView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -123,23 +115,14 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(
-            BlockState state,
-            WorldView world,
-            ScheduledTickView tickView,
-            BlockPos pos,
-            Direction direction,
-            BlockPos neighborPos,
-            BlockState neighborState,
-            Random random
-    ) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED)) {
-            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
 
         return attachedDirection(state).getOpposite() == direction && !state.canPlaceAt(world, pos)
                 ? Blocks.AIR.getDefaultState()
-                : super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
+                : super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -178,13 +161,13 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
     }
 
     @Override
-    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getWorld().isClient()) { return super.onUseWithItem(stack, state, world, pos, player, hand, hit); }
         if (stack.isOf(ModItems.CATCHING_NET)) { return onUseWithCatchingNet(stack, state,(ServerWorld) world, pos, player, hand); }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
-    private ActionResult onUseWithCatchingNet(ItemStack stack, BlockState state, ServerWorld world, BlockPos pos, PlayerEntity player, Hand ignoredHand) {
+    private ItemActionResult onUseWithCatchingNet(ItemStack stack, BlockState state, ServerWorld world, BlockPos pos, PlayerEntity player, Hand ignoredHand) {
         if (world.getBlockEntity(pos) instanceof FireflyLanternBlockEntity fireflyLanternBlockEntity) {
 
             // if we are sneaking we remove firefly from lantern
@@ -196,19 +179,19 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
             else if (!player.isSneaking() && CatchingNet.canRemoveCaughtEntity(stack) && canAddFireflies(state)) {
                 CatchingNet.CaughtEntityData caughtEntityData = CatchingNet.removeLastEntity(player, stack, Identifier.of("fireflies:firefly"));
                 if (caughtEntityData == null) {
-                    return ActionResult.FAIL;
+                    return ItemActionResult.FAIL;
                 }
                 fireflyLanternBlockEntity.addFirefly(caughtEntityData.entityData());
             }
 
             else {
-                return ActionResult.FAIL;
+                return ItemActionResult.FAIL;
             }
 
             CatchingNet.playCatchSound(world, player, stack);
-            return ActionResult.SUCCESS_SERVER;
+            return ItemActionResult.SUCCESS;
         }
-        return ActionResult.FAIL;
+        return ItemActionResult.FAIL;
     }
 
     // endregion
@@ -263,7 +246,7 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
     }
 
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         Entity entity = builder.getOptional(LootContextParameters.THIS_ENTITY);
         if (entity instanceof TntEntity
                 || entity instanceof CreeperEntity
@@ -276,23 +259,18 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
         return super.getDroppedStacks(state, builder);
     }
 
-
     @Override
-    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
         ((FireflyLanternBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).tryReleaseFireflies(state);
         super.onExploded(state, world, pos, explosion, stackMerger);
     }
 
     // endregion
 
-
     @Override
-    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
-        ItemStack itemStack = super.getPickStack(world, pos, state, includeData);
-        if (includeData) {
-            itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, state.get(FIREFLIES_AMOUNT)));
-        }
-
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        ItemStack itemStack = super.getPickStack(world, pos, state);
+        itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, state.get(FIREFLIES_AMOUNT)));
         return itemStack;
     }
 

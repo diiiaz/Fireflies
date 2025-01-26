@@ -193,7 +193,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
             updateAverageColors();
         }
 
-        int color = ColorHelper.fromFloats(1.0F,
+        int color = ColorHelper.Argb.fromFloats(1.0F,
                 Math.clamp(averageColors.x * randomOffset.x, 0.0F, 1.0F),
                 Math.clamp(averageColors.y * randomOffset.y, 0.0F, 1.0F),
                 Math.clamp(averageColors.z * randomOffset.z, 0.0F, 1.0F)
@@ -205,7 +205,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
 
     private void updateAverageColors() {
         List<Vector3f> colors = Lists.newArrayList();
-        getFireflies().forEach(firefly -> colors.add(ColorHelper.toVector(FireflyVariant.byId(firefly.getData().getVariant()).getColor())));
+        getFireflies().forEach(firefly -> colors.add(new Vector3f(1, 1, 1).mul(FireflyVariant.byId(firefly.getData().getVariant()).getColor())));
         this.averageColors = calculateAverageColor(colors);
     }
 

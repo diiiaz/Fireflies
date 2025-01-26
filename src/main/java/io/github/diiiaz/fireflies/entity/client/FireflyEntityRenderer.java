@@ -3,46 +3,31 @@ package io.github.diiiaz.fireflies.entity.client;
 import io.github.diiiaz.fireflies.Mod;
 import io.github.diiiaz.fireflies.entity.ModEntityModelLayers;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
-import io.github.diiiaz.fireflies.entity.custom.FireflyVariant;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 
 @Environment(EnvType.CLIENT)
-public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, FireflyEntityRenderState, FireflyEntityModel> {
+public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, TintableCompositeModel<FireflyEntity>> {
 
     private static final Identifier TEXTURE = Mod.createIdentifier("textures/entity/firefly/firefly.png");
     private static final float SHADOW_RADIUS = 0.1f;
 
     public FireflyEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new FireflyEntityModel(context.getPart(ModEntityModelLayers.FIREFLY)), SHADOW_RADIUS);
+        super(context, new FireflyEntityModel<>(context.getPart(ModEntityModelLayers.FIREFLY)), SHADOW_RADIUS);
     }
 
     @Override
-    public Identifier getTexture(FireflyEntityRenderState state) {
+    public Identifier getTexture(FireflyEntity entity) {
         return TEXTURE;
     }
 
-    @Override
-    public FireflyEntityRenderState createRenderState() {
-        return new FireflyEntityRenderState();
-    }
-
-    @Override
-    public void updateRenderState(FireflyEntity entity, FireflyEntityRenderState state, float f) {
-        super.updateRenderState(entity, state, f);
-        state.baseColor = entity.getWorld().isNight() ? FireflyVariant.byId(entity.getVariant()).getColor() : -14803426;
-    }
-
-    @Override
-    protected int getMixColor(FireflyEntityRenderState state) {
-        return state.baseColor;
-    }
 
     @Override
     protected int getBlockLight(FireflyEntity entity, BlockPos pos) {
@@ -51,6 +36,7 @@ public class FireflyEntityRenderer extends MobEntityRenderer<FireflyEntity, Fire
         double frequency = MathHelper.clampedMap(entity.getLightFrequencyOffset(), 0.0, 1.0, 0.05, 0.2);
         return (int) sineWaveValue(0, 15, offset, frequency, entity.getWorld().getTime());
     }
+
 
     @SuppressWarnings("SameParameterValue")
     private static double sineWaveValue(double min, double max, double offset, double frequency, double time) {

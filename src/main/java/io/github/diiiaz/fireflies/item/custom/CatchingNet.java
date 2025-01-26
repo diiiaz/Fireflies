@@ -37,8 +37,8 @@ import java.util.*;
 
 public class CatchingNet extends Item {
 
-    private static final int FULL_ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 1.0F, 0.33F, 0.33F);
-    private static final int ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 0.44F, 0.53F, 1.0F);
+    private static final int FULL_ITEM_BAR_COLOR = ColorHelper.Argb.fromFloats(1.0F, 1.0F, 0.33F, 0.33F);
+    private static final int ITEM_BAR_COLOR = ColorHelper.Argb.fromFloats(1.0F, 0.44F, 0.53F, 1.0F);
     public static final int MAX_CAUGHT_AMOUNT = 16;
 
     public CatchingNet(Settings settings) {
@@ -59,7 +59,7 @@ public class CatchingNet extends Item {
         HashMap<Identifier, Integer> caughtEntitiesHash = new HashMap<>();
 
         caughtEntities.forEach(caughtEntityData -> {
-            if (caughtEntitiesHash.containsKey(caughtEntityData.entityData.getId())) {
+            if (caughtEntitiesHash.containsKey(caughtEntityData.entityData.get())) {
                 caughtEntitiesHash.replace(caughtEntityData.entityData.getId(), caughtEntitiesHash.get(caughtEntityData.entityData.getId()) + 1);
             } else {
                 caughtEntitiesHash.put(caughtEntityData.entityData.getId(), 1);
@@ -181,7 +181,7 @@ public class CatchingNet extends Item {
         world.spawnEntity(entity);
 
         spawnCatchParticles(world, x, y, z);
-        return ActionResult.SUCCESS_SERVER;
+        return ActionResult.SUCCESS;
     }
 
 
@@ -196,7 +196,7 @@ public class CatchingNet extends Item {
 
         if ((getCaughtAmount(itemStack) + 1) > MAX_CAUGHT_AMOUNT) { return false; }
 
-        List<CaughtEntityData> caughtEntities = new ArrayList<>(itemStack.getOrDefault(ModDataComponentTypes.CAUGHT_ENTITIES, List.of()));
+        List<CaughtEntityData> caughtEntitistartes = new ArrayList<>(itemStack.getOrDefault(ModDataComponentTypes.CAUGHT_ENTITIES, List.of()));
         caughtEntities.add(entity);
         itemStack.set(ModDataComponentTypes.CAUGHT_ENTITIES, caughtEntities);
         return true;
@@ -218,7 +218,7 @@ public class CatchingNet extends Item {
         CaughtEntityData entityData;
 
         if (filterEntityId != null) {
-            List<CaughtEntityData> list = caughtEntities.stream().filter(caughtEntityData -> Objects.equals(caughtEntityData.entityData.getId(), filterEntityId)).toList();
+            List<CaughtEntityData> list = caughtEntities.stream().filter(caughtEntityData -> Objects.equals(caughtEntityData.entityData.getNbt().get("id"), filterEntityId)).toList();
 
             if (list.stream().findFirst().isEmpty()) { return null; }
 
@@ -258,7 +258,7 @@ public class CatchingNet extends Item {
         public Entity loadEntity(World world) {
             NbtCompound nbtCompound = this.entityData.copyNbt();
             CatchingNet.IRRELEVANT_NBT_KEYS.forEach(nbtCompound::remove);
-            Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.LOAD, entityx -> entityx);
+            Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> entityx);
             if (entity != null) {
                 entity.setNoGravity(true);
                 return entity;

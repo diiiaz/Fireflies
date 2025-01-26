@@ -5,13 +5,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.TintableCompositeModel;
+import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class FireflyEntityModel extends EntityModel<FireflyEntityRenderState> {
+public class FireflyEntityModel<T extends Entity> extends TintableCompositeModel<T> {
+
+	private final ModelPart root;
 
     public FireflyEntityModel(ModelPart root) {
-		super(root, RenderLayer::getEntityCutout);
-        root.getChild("body_bone");
+		this.root = root;
+		root.getChild("body_bone");
     }
 
 	public static TexturedModelData getTexturedModelData() {
@@ -21,4 +25,13 @@ public class FireflyEntityModel extends EntityModel<FireflyEntityRenderState> {
 		return TexturedModelData.of(modelData, 4, 1);
 	}
 
+	@Override
+	public ModelPart getPart() {
+		return this.root;
+	}
+
+	@Override
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+
+	}
 }

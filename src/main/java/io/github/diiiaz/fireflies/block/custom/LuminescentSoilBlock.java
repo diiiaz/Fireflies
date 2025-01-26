@@ -22,8 +22,8 @@ import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -131,14 +131,15 @@ public class LuminescentSoilBlock extends BlockWithEntity {
         return super.onBreak(world, pos, state, player);
     }
 
+
     @Override
-    protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
         ((LuminescentSoilBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).tryReleaseFireflies(state, true);
         super.onExploded(state, world, pos, explosion, stackMerger);
     }
 
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
         Entity entity = builder.getOptional(LootContextParameters.THIS_ENTITY);
         if (entity instanceof TntEntity
                 || entity instanceof CreeperEntity
@@ -152,12 +153,9 @@ public class LuminescentSoilBlock extends BlockWithEntity {
     }
 
     @Override
-    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
-        ItemStack itemStack = super.getPickStack(world, pos, state, includeData);
-        if (includeData) {
-            itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, state.get(FIREFLIES_AMOUNT)));
-        }
-
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        ItemStack itemStack = super.getPickStack(world, pos, state);
+        itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, state.get(FIREFLIES_AMOUNT)));
         return itemStack;
     }
 

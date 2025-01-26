@@ -3,6 +3,7 @@ package io.github.diiiaz.fireflies.particle.custom;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.diiiaz.fireflies.particle.ModParticleTypes;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -18,7 +19,7 @@ public class FireflyParticleEffect extends AbstractDustParticleEffect {
 
     public static final MapCodec<FireflyParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
-                            Codecs.RGB.fieldOf("color").forGetter(particle -> particle.color), SCALE_CODEC.fieldOf("scale").forGetter(AbstractDustParticleEffect::getScale)
+                            Codecs.ARGB.fieldOf("color").forGetter(particle -> particle.color), SCALE_CODEC.fieldOf("scale").forGetter(AbstractDustParticleEffect::getScale)
                     )
                     .apply(instance, FireflyParticleEffect::new)
     );
@@ -38,12 +39,12 @@ public class FireflyParticleEffect extends AbstractDustParticleEffect {
     }
 
     public Vector3f getColor() {
-        return ColorHelper.toVector(this.color);
+        return new Vector3f(1, 1, 1).mul(this.color);
     }
 
 
     public static FireflyParticleEffect createDefault(Random random) {
-        return new FireflyParticleEffect(ColorHelper.fromFloats(1.0F,
+        return new FireflyParticleEffect(ColorHelper.Argb.fromFloats(1.0F,
                 MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.0F), // red
                 MathHelper.map(random.nextFloat(), 0.0F, 1.0F, 0.8F, 1.0F), // green
                 0.0F), 1.0F);

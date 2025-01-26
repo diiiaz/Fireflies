@@ -259,10 +259,13 @@ public class FireflyEntity extends AnimalEntity implements Flutterer {
 
     // region +--------------------------+ Mob Tick +--------------------------+
 
+
     @Override
-    protected void mobTick(ServerWorld world) {
-        tickInWater(world);
-        tickInDayWithoutHome(world);
+    protected void mobTick() {
+        World world = this.getWorld();
+        if (world.isClient) { return; }
+        tickInWater((ServerWorld) world);
+        tickInDayWithoutHome((ServerWorld) world);
     }
 
     private void tickInDayWithoutHome(ServerWorld world) {
@@ -284,7 +287,7 @@ public class FireflyEntity extends AnimalEntity implements Flutterer {
         }
 
         if (this.ticksInsideWater > 20) {
-            this.damage(world, this.getDamageSources().drown(), 1.0F);
+            this.damage(this.getDamageSources().drown(), 1.0F);
         }
     }
 
@@ -386,7 +389,7 @@ public class FireflyEntity extends AnimalEntity implements Flutterer {
         };
         birdNavigation.setCanPathThroughDoors(false);
         birdNavigation.setCanSwim(false);
-        birdNavigation.setMaxFollowRange(TOO_FAR_DISTANCE);
+        birdNavigation.setCanEnterOpenDoors(true);
         return birdNavigation;
     }
 
@@ -396,9 +399,9 @@ public class FireflyEntity extends AnimalEntity implements Flutterer {
 
     public static DefaultAttributeContainer.Builder createAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.MAX_HEALTH, 2.0)
-                .add(EntityAttributes.FLYING_SPEED, 0.6F)
-                .add(EntityAttributes.MOVEMENT_SPEED, 0.3F);
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 2.0)
+                .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6F)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
     }
 
     // endregion
@@ -440,11 +443,11 @@ public class FireflyEntity extends AnimalEntity implements Flutterer {
     // region +--------------------------+ Hurt & Death +--------------------------+
 
     @Override
-    public boolean damage(ServerWorld world, DamageSource source, float amount) {
-        if (this.isInvulnerableTo(world, source)) {
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         } else {
-            return super.damage(world, source, amount);
+            return super.damage(source, amount);
         }
     }
 
@@ -732,7 +735,7 @@ public class FireflyEntity extends AnimalEntity implements Flutterer {
 
         @Override
         public void start() {
-            if (FireflyEntity.this.homePos != null && FireflyEntity.this.getWorld().isPosLoaded(FireflyEntity.this.homePos) && !FireflyEntity.this.hasValidHome()) {
+            if (FireflyEntity.this.homePos != null && FireflyEntity.this.getWorld().isPosLoaded(FireflyEntity.this.homePos.getX(), FireflyEntity.this.homePos.getZ()) && !FireflyEntity.this.hasValidHome()) {
                 FireflyEntity.this.clearHomePos();
             }
 
