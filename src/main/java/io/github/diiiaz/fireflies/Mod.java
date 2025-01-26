@@ -40,11 +40,13 @@ public class Mod implements ModInitializer {
 		ModEntities.initialize();
 
 		ModItems.initialize();
+
 		ModBlockEntityTypes.initialize();
 		ModBlocks.initialize();
+
 		ModSounds.initialize();
 
-		ModWorldGeneration.generateModWorldGen();
+		ModWorldGeneration.initialize();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.FIREFLY, FireflyEntity.createAttributes());
 
