@@ -27,7 +27,7 @@ public class ModConfiguredFeatures {
                 ModFeatures.LUMINESCENT_SOIL_FEATURE,
                 new ModLuminescentSoilFeatureConfig(
                         PredicatedStateProvider.of(ModBlocks.LUMINESCENT_SOIL),
-                        BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK))
+                        BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.MUD))
                 )
         );
     }
