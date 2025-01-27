@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/9l8lRbI.png">
+<img src="https://i.imgur.com/OqEGo92.png">
 # Fireflies
 ![Static Badge](https://img.shields.io/badge/Mod_Loader-Fabric-beige?&link=https%3A%2F%2Fmodrinth.com%2Fmod%2Ffabric-api)  <img src="https://img.shields.io/modrinth/dt/firefliies?logo=Modrinth&label=Modrinth%20Downloads&color=00af5c" alt="Modrinth">
 
