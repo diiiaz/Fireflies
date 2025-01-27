@@ -3,7 +3,7 @@
 
 <img src="https://i.imgur.com/UdYVXR2.png">
 
-A Minecraft Fabric mod that allows you to change the color of name tags to color mob names ! 
+A Minecraft Fabric mod that brings fireflies, a catching net, and jars to enhance and beautify your world!
 
 
 ## Download
