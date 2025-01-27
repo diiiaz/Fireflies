@@ -35,11 +35,11 @@
                   "source": "block_entity"
                 }
               ],
-              "name": "fireflies:firefly_lantern"
+              "name": "fireflies:firefly_jar"
             },
             {
               "type": "minecraft:item",
-              "name": "fireflies:firefly_lantern"
+              "name": "fireflies:firefly_jar"
             }
           ]
         }

@@ -1,8 +1,8 @@
 package io.github.diiiaz.fireflies.block;
 
 import io.github.diiiaz.fireflies.Mod;
+import io.github.diiiaz.fireflies.block.custom.FireflyJar;
 import io.github.diiiaz.fireflies.block.custom.LuminescentSoilBlock;
-import io.github.diiiaz.fireflies.block.custom.FireflyLantern;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
@@ -19,14 +19,14 @@ import net.minecraft.sound.BlockSoundGroup;
 public class ModBlocks {
 
 
-    public static final Block FIREFLY_LANTERN = registerBlock("firefly_lantern",
-            new FireflyLantern(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("firefly_lantern")))
+    public static final Block FIREFLY_JAR = registerBlock("firefly_jar",
+            new FireflyJar(AbstractBlock.Settings.create()
+                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Mod.createIdentifier("firefly_jar")))
                     .mapColor(MapColor.IRON_GRAY)
                     .solid()
                     .strength(3.5F)
                     .sounds(BlockSoundGroup.LANTERN)
-                    .luminance(FireflyLantern::getLuminance)
+                    .luminance(FireflyJar::getLuminance)
                     .nonOpaque()
                     .pistonBehavior(PistonBehavior.DESTROY)
             ), true);
@@ -61,7 +61,7 @@ public class ModBlocks {
 
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> {
-            entries.addAfter(Items.SOUL_LANTERN, FIREFLY_LANTERN.asItem());
+            entries.addAfter(Items.SOUL_LANTERN, FIREFLY_JAR.asItem());
             entries.addAfter(Items.BEEHIVE, LUMINESCENT_SOIL.asItem());
         });
 

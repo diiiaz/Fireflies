@@ -24,7 +24,7 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         addDrop(ModBlocks.LUMINESCENT_SOIL, this::luminescentSoilDrops);
-        addDrop(ModBlocks.FIREFLY_LANTERN, this::fireflyLanternDrops);
+        addDrop(ModBlocks.FIREFLY_JAR, this::fireflyJarDrops);
     }
 
 
@@ -42,7 +42,7 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                 );
     }
 
-    public LootTable.Builder fireflyLanternDrops(Block drop) {
+    public LootTable.Builder fireflyJarDrops(Block drop) {
         return LootTable.builder()
                 .pool(
                         LootPool.builder()

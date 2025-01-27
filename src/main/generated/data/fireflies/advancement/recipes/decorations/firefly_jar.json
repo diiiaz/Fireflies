@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fireflies:firefly_lantern"
+        "recipe": "fireflies:firefly_jar"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "fireflies:firefly_lantern"
+      "fireflies:firefly_jar"
     ]
   }
 }

@@ -1,5 +1,5 @@
 // 1.21.4	-999999999-01-01T00:00:00	Fireflies/FirefliesRecipeProvider
-3effd0b7bffc194c76dd8022bc79e935a85e1bf8 data/fireflies/advancement/recipes/decorations/firefly_lantern.json
+5e25650b81f8b93776b8f9ef235664f39e16fb5f data/fireflies/advancement/recipes/decorations/firefly_jar.json
 75ee4c4d7c53f324af0c8f3bf915143dc832a292 data/fireflies/advancement/recipes/tools/catching_net.json
 ecc3358a7fb18b1ca63f02c01b300ccfceb88ce0 data/fireflies/recipe/catching_net.json
-0915a21577c5105b389e0e1ad4b2ee8ab4a32c22 data/fireflies/recipe/firefly_lantern.json
+b03bff60e40798ae0ec16f5515ce67b4b2a6e836 data/fireflies/recipe/firefly_jar.json

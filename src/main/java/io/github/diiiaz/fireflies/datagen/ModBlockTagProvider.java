@@ -24,7 +24,7 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(ModBlocks.LUMINESCENT_SOIL);
 
         this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
-                .add(ModBlocks.FIREFLY_LANTERN);
+                .add(ModBlocks.FIREFLY_JAR);
 
     }
 }

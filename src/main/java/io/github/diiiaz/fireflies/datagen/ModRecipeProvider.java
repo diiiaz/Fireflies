@@ -34,7 +34,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .input('T', Items.STICK)
                         .criterion("has_string", this.conditionsFromItem(Items.STRING))
                         .offerTo(exporter);
-                createShaped(RecipeCategory.DECORATIONS, ModBlocks.FIREFLY_LANTERN, 1)
+                createShaped(RecipeCategory.DECORATIONS, ModBlocks.FIREFLY_JAR, 1)
                         .pattern(" S ")
                         .pattern("G G")
                         .pattern(" G ")

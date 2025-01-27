@@ -1,7 +1,7 @@
 {
   "entity.fireflies.firefly": "Firefly",
 
-  "block.fireflies.firefly_lantern": "Firefly Lantern",
+  "block.fireflies.firefly_jar": "Firefly Jar",
   "block.fireflies.luminescent_soil": "Luminescent Soil",
 
   "container.fireflies": "Fireflies: %s / %s",

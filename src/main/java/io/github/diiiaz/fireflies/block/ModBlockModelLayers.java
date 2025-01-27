@@ -11,7 +11,7 @@ public class ModBlockModelLayers {
 
     public static void initialize() {
 
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FIREFLY_LANTERN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FIREFLY_JAR, RenderLayer.getCutout());
 
     }
 

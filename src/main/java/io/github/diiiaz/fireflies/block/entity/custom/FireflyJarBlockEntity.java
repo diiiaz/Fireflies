@@ -2,7 +2,7 @@ package io.github.diiiaz.fireflies.block.entity.custom;
 
 import com.google.common.collect.Lists;
 import io.github.diiiaz.fireflies.Mod;
-import io.github.diiiaz.fireflies.block.custom.FireflyLantern;
+import io.github.diiiaz.fireflies.block.custom.FireflyJar;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.entity.custom.FireflyEntity;
@@ -32,15 +32,15 @@ import org.joml.Vector3f;
 import java.util.List;
 import java.util.Objects;
 
-public class FireflyLanternBlockEntity extends BlockEntity {
+public class FireflyJarBlockEntity extends BlockEntity {
 
     private static final String FIREFLIES_KEY = "fireflies";
     private final List<FireflyData.Firefly> fireflies = Lists.newArrayList();
     private Vector3f averageColors;
 
 
-    public FireflyLanternBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntityTypes.FIREFLY_LANTERN_BLOCK_ENTITY_TYPE, pos, state);
+    public FireflyJarBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntityTypes.FIREFLY_JAR_BLOCK_ENTITY_TYPE, pos, state);
     }
 
 
@@ -71,7 +71,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
 
     private void updateState() {
         if (this.world != null && !this.world.isClient) {
-            this.world.setBlockState(pos, this.world.getBlockState(this.pos).with(FireflyLantern.FIREFLIES_AMOUNT, getFirefliesCount()));
+            this.world.setBlockState(pos, this.world.getBlockState(this.pos).with(FireflyJar.FIREFLIES_AMOUNT, getFirefliesCount()));
             this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.pos, GameEvent.Emitter.of(null, this.getCachedState()));
             updateAverageColors();
         }
@@ -150,7 +150,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
         List<FireflyData> list = components.getOrDefault(ModDataComponentTypes.FIREFLIES_AMOUNT, List.of());
         list.forEach(this::addFirefly);
         if (this.world != null && !this.world.isClient()) {
-            world.setBlockState(pos, this.world.getBlockState(pos).with(FireflyLantern.FIREFLIES_AMOUNT, ((FireflyLanternBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).getFirefliesCount()));
+            world.setBlockState(pos, this.world.getBlockState(pos).with(FireflyJar.FIREFLIES_AMOUNT, ((FireflyJarBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).getFirefliesCount()));
             updateAverageColors();
         }
     }
@@ -164,7 +164,7 @@ public class FireflyLanternBlockEntity extends BlockEntity {
     // endregion
 
 
-    public static void serverTick(World world, BlockPos pos, BlockState ignoredState, FireflyLanternBlockEntity blockEntity) {
+    public static void serverTick(World world, BlockPos pos, BlockState ignoredState, FireflyJarBlockEntity blockEntity) {
         if (blockEntity.hasFireflies()) {
             if (world.getRandom().nextDouble() < 0.005) {
                 double x = (double)pos.getX() + 0.5;

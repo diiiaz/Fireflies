@@ -3,7 +3,7 @@ package io.github.diiiaz.fireflies.block.custom;
 import com.mojang.serialization.MapCodec;
 import io.github.diiiaz.fireflies.block.ModProperties;
 import io.github.diiiaz.fireflies.block.entity.ModBlockEntityTypes;
-import io.github.diiiaz.fireflies.block.entity.custom.FireflyLanternBlockEntity;
+import io.github.diiiaz.fireflies.block.entity.custom.FireflyJarBlockEntity;
 import io.github.diiiaz.fireflies.component.ModDataComponentTypes;
 import io.github.diiiaz.fireflies.item.ModItems;
 import io.github.diiiaz.fireflies.item.custom.CatchingNet;
@@ -60,16 +60,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class FireflyLantern extends BlockWithEntity implements Waterloggable {
+public class FireflyJar extends BlockWithEntity implements Waterloggable {
 
-    public static final MapCodec<FireflyLantern> CODEC = createCodec(FireflyLantern::new);
+    public static final MapCodec<FireflyJar> CODEC = createCodec(FireflyJar::new);
     public static final IntProperty FIREFLIES_AMOUNT = ModProperties.FIREFLIES_LANTERN_AMOUNT;
     public static final BooleanProperty HANGING = Properties.HANGING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     protected static final VoxelShape STANDING_SHAPE = VoxelShapes.union(Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 7.0, 11.0), Block.createCuboidShape(6.0, 7.0, 6.0, 10.0, 9.0, 10.0));
     protected static final VoxelShape HANGING_SHAPE = VoxelShapes.union(Block.createCuboidShape(5.0, 1.0, 5.0, 11.0, 8.0, 11.0), Block.createCuboidShape(6.0, 8.0, 6.0, 10.0, 10.0, 10.0));
 
-    public FireflyLantern(AbstractBlock.Settings settings) {
+    public FireflyJar(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(HANGING, Boolean.FALSE).with(WATERLOGGED, Boolean.FALSE).with(FIREFLIES_AMOUNT, 0));
     }
@@ -77,16 +77,16 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : validateTicker(type, ModBlockEntityTypes.FIREFLY_LANTERN_BLOCK_ENTITY_TYPE, FireflyLanternBlockEntity::serverTick);
+        return world.isClient ? null : validateTicker(type, ModBlockEntityTypes.FIREFLY_JAR_BLOCK_ENTITY_TYPE, FireflyJarBlockEntity::serverTick);
     }
 
     @Override
     public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new FireflyLanternBlockEntity(pos, state);
+        return new FireflyJarBlockEntity(pos, state);
     }
 
     @Override
-    public MapCodec<FireflyLantern> getCodec() {
+    public MapCodec<FireflyJar> getCodec() {
         return CODEC;
     }
 
@@ -185,20 +185,20 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
     }
 
     private ActionResult onUseWithCatchingNet(ItemStack stack, BlockState state, ServerWorld world, BlockPos pos, PlayerEntity player, Hand ignoredHand) {
-        if (world.getBlockEntity(pos) instanceof FireflyLanternBlockEntity fireflyLanternBlockEntity) {
+        if (world.getBlockEntity(pos) instanceof FireflyJarBlockEntity fireflyJarBlockEntity) {
 
-            // if we are sneaking we remove firefly from lantern
+            // if we are sneaking we remove firefly from the jar
             if (player.isSneaking() && CatchingNet.canAddEntity(stack) && canRemoveFirefly(state)) {
-                CatchingNet.addEntity(player, stack, fireflyLanternBlockEntity.removeFirefly().entityData());
+                CatchingNet.addEntity(player, stack, fireflyJarBlockEntity.removeFirefly().entityData());
             }
 
-            // if we are not sneaking we add a firefly to the lantern
+            // if we are not sneaking we add a firefly to the jar
             else if (!player.isSneaking() && CatchingNet.canRemoveCaughtEntity(stack) && canAddFireflies(state)) {
                 CatchingNet.CaughtEntityData caughtEntityData = CatchingNet.removeLastEntity(player, stack, Identifier.of("fireflies:firefly"));
                 if (caughtEntityData == null) {
                     return ActionResult.FAIL;
                 }
-                fireflyLanternBlockEntity.addFirefly(caughtEntityData.entityData());
+                fireflyJarBlockEntity.addFirefly(caughtEntityData.entityData());
             }
 
             else {
@@ -236,11 +236,11 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
         if (world instanceof ServerWorld serverWorld
                 && player.isCreative()
                 && serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
-                && world.getBlockEntity(pos) instanceof FireflyLanternBlockEntity fireflyLanternBlockEntity) {
+                && world.getBlockEntity(pos) instanceof FireflyJarBlockEntity fireflyJarBlockEntity) {
             int i = state.get(FIREFLIES_AMOUNT);
-            if (fireflyLanternBlockEntity.hasFireflies() || i > 0) {
+            if (fireflyJarBlockEntity.hasFireflies() || i > 0) {
                 ItemStack itemStack = new ItemStack(this);
-                itemStack.applyComponentsFrom(fireflyLanternBlockEntity.createComponentMap());
+                itemStack.applyComponentsFrom(fireflyJarBlockEntity.createComponentMap());
                 itemStack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(FIREFLIES_AMOUNT, i));
                 ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
                 itemEntity.setToDefaultPickupDelay();
@@ -254,9 +254,9 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
     @Override
     public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         super.afterBreak(world, player, pos, state, blockEntity, tool);
-        if (!world.isClient && blockEntity instanceof FireflyLanternBlockEntity fireflyLanternBlockEntity) {
+        if (!world.isClient && blockEntity instanceof FireflyJarBlockEntity fireflyJarBlockEntity) {
             if (!EnchantmentHelper.hasAnyEnchantmentsIn(tool, ModTags.Enchantments.PREVENTS_FIREFLY_SPAWNS_WHEN_MINING)) {
-                fireflyLanternBlockEntity.tryReleaseFireflies(state);
+                fireflyJarBlockEntity.tryReleaseFireflies(state);
             }
             world.updateComparators(pos, this);
         }
@@ -279,7 +279,7 @@ public class FireflyLantern extends BlockWithEntity implements Waterloggable {
 
     @Override
     protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-        ((FireflyLanternBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).tryReleaseFireflies(state);
+        ((FireflyJarBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).tryReleaseFireflies(state);
         super.onExploded(state, world, pos, explosion, stackMerger);
     }
 
